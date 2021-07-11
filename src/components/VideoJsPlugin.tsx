@@ -59,6 +59,8 @@ class Impl extends Component<PropsWithDisplayer, State> {
         const s = this.props.plugin.attributes;
         const duration = (this.player?.duration() || 1e3) * 1000;
         const bufferedPercent = this.player?.bufferedPercent() || 0;
+
+        // const controllerVisible = this.state.isAudio || this.state.controllerVisible;
         return (
             <div
                 className={
@@ -70,11 +72,8 @@ class Impl extends Component<PropsWithDisplayer, State> {
                 onMouseMove={this.showController}
             >
                 <div className="video-js-plugin-player" ref={this.container}></div>
-                <div
-                    className="video-js-plugin-header"
-                    style={{ opacity: this.state.controllerVisible ? "1" : "0" }}
-                >
-                    <div className="video-js-plugin-title">HAHAHA</div>
+                <div className="video-js-plugin-header">
+                    <div className="video-js-plugin-title">Sync Player</div>
                     <div className="videojs-plugin-close-icon" ref={this.setupClose}>
                         &times;
                     </div>
@@ -89,11 +88,11 @@ class Impl extends Component<PropsWithDisplayer, State> {
                     seekTime={this.seekTime}
                     bufferProgress={duration * bufferedPercent}
                     progressTime={getCurrentTime(s, this.props) * 1000}
-                    visible={this.state.controllerVisible}
+                    visible
                 />
                 {!this.props.plugin.context?.hideMuteAlert && this.state.NoSound && (
                     <div ref={this.setupAlert} className="videojs-plugin-muted-alert"></div>
-                    )}
+                )}
             </div>
         );
     }
@@ -205,9 +204,10 @@ class Impl extends Component<PropsWithDisplayer, State> {
 
         const video = document.createElement("video");
         video.className = "video-js";
-        video.setAttribute("playsInline", "true");
-        video.setAttribute("webkit-playsinline", "true");
         poster && (video.poster = poster);
+
+        video.setAttribute("playsInline", "");
+        video.setAttribute("webkit-playsinline", "");
 
         const source = document.createElement("source");
         if (new URL(src).pathname.endsWith(".m3u8")) {
