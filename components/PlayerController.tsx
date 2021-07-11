@@ -9,7 +9,6 @@ import volume2 from "./image/vulme2.svg";
 import volume1 from "./image/vulme1.svg";
 import volume0 from "./image/vulme0.svg";
 import debounce from "lodash.debounce";
-console.log(video_pause)
 
 export type PlayerControllerProps = {
     fullTime: number; // ms
@@ -26,7 +25,6 @@ export type PlayerControllerProps = {
 
 export type PlayerControllerStates = {
     isPlayerSeeking: boolean;
-    currentTime: number;
     isVolumeHover: boolean;
     seekVolume: number;
     isDisplay: boolean;
@@ -34,7 +32,6 @@ export type PlayerControllerStates = {
 
 
 export default class PlayerController extends React.Component<PlayerControllerProps, PlayerControllerStates> {
-    private progressTime: number = 0;
     private stageVolume: number = 0;
     private updateVolumeTimer: number;
     private onVolumeSeeking: boolean = false;
@@ -43,7 +40,6 @@ export default class PlayerController extends React.Component<PlayerControllerPr
         super(props);
         this.state = {
             isPlayerSeeking: false,
-            currentTime: 0,
             isVolumeHover: false,
             seekVolume: 1,
             isDisplay: true,
@@ -71,20 +67,6 @@ export default class PlayerController extends React.Component<PlayerControllerPr
             this.props.play();
         } else {
             this.props.pause();
-        }
-    }
-
-    private getCurrentTime = (progressTime: number): number => {
-        if (this.state.isPlayerSeeking) {
-            this.progressTime = progressTime;
-            return this.state.currentTime;
-        } else {
-            const isChange = this.progressTime !== progressTime;
-            if (isChange) {
-                return progressTime;
-            } else {
-                return this.state.currentTime;
-            }
         }
     }
 
@@ -143,20 +125,27 @@ export default class PlayerController extends React.Component<PlayerControllerPr
     }
 
 
+
     public render(): React.ReactNode {
         const { fullTime, progressTime } = this.props;
         return (
-            <div 
-                className="player-schedule" 
+            <div
+                className="player-schedule"
                 style={{ display: this.props.isDisplay ? "block" : "none" }}>
                 <div className="player-mid-box">
                     <SeekSlider
                         fullTime={fullTime}
-                        currentTime={this.getCurrentTime(progressTime)}
+                        currentTime={progressTime}
                         onChange={this.onChange}
                         bufferProgress={this.props.bufferProgress}
                         bufferColor={"rgba(255,255,255,0.3)"}
                         hideHoverTime={true}
+                        onSeekStart={() => {
+                            this.setState({ isPlayerSeeking: true });
+                        }}
+                        onSeekEnd={() => {
+                            this.setState({ isPlayerSeeking: false });
+                        }}
                         limitTimeTooltipBySides={true}
                         play={this.props.play}
                         pause={this.props.pause}
