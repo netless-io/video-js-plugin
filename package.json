@@ -13,5 +13,8 @@
     "@types/react": "^17.0.14",
     "@types/react-dom": "^17.0.9",
     "@types/video.js": "^7.3.23"
+  },
+  "dependencies": {
+    "lodash.debounce": "^4.0.8"
   }
 }
