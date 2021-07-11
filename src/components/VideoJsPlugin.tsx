@@ -51,8 +51,6 @@ class Impl extends Component<PropsWithDisplayer, State> {
         };
 
         props.room && checkWhiteWebSdkVersion(props.room);
-
-        (window as any).plugin = this.props.plugin;
     }
 
     render() {
@@ -105,30 +103,35 @@ class Impl extends Component<PropsWithDisplayer, State> {
 
     showController = () => {
         this.setState({ controllerVisible: true });
-        this.setControllerHide();
+        this.debounceHidingController();
     };
 
     play = () => {
         const hostTime = this.props.room?.calibrationTimestamp;
+        this.debug(">>> play", { paused: false, hostTime });
         this.props.plugin.putAttributes({ paused: false, hostTime });
     };
 
     pause = () => {
         const currentTime = getCurrentTime(this.props.plugin.attributes, this.props);
+        this.debug(">>> pause", { paused: true, currentTime });
         this.props.plugin.putAttributes({ paused: true, currentTime });
     };
 
     handleVolume = (volume: number) => {
+        this.debug(">>> volume", { volume });
         this.props.plugin.putAttributes({ volume });
     };
 
     seekTime = (t: number) => {
         const hostTime = this.props.room?.calibrationTimestamp;
+        this.debug(">>> seek", { currentTime: t / 1000, hostTime });
         this.props.plugin.putAttributes({ currentTime: t / 1000, hostTime });
     };
 
     resetPlayer = () => {
         this.player.autoplay(false);
+        this.debug(">>> ended", { paused: true, currentTime: 0 });
         this.props.plugin.putAttributes({ paused: true, currentTime: 0 });
     };
 
@@ -151,6 +154,7 @@ class Impl extends Component<PropsWithDisplayer, State> {
         if (!player) return;
 
         if (player.paused() !== s.paused) {
+            this.debug("<<< paused -> %o", s.paused);
             if (s.paused) {
                 player.pause();
             } else {
@@ -160,10 +164,12 @@ class Impl extends Component<PropsWithDisplayer, State> {
 
         // NOTE: 2 actions below will cause error message in console (ignore them)
         if (player.muted() !== s.muted) {
+            this.debug("<<< muted -> %o", s.muted);
             player.muted(s.muted);
         }
 
         if (player.volume() !== s.volume) {
+            this.debug("<<< volume -> %o", s.volume);
             player.volume(s.volume);
         }
 
@@ -171,11 +177,12 @@ class Impl extends Component<PropsWithDisplayer, State> {
         if (currentTime > player.duration()) {
             this.resetPlayer();
         } else if (Math.abs(player.currentTime() - currentTime) > options.currentTimeMaxError) {
+            this.debug("<<< currentTime -> %o", currentTime);
             player.currentTime(currentTime);
         }
     };
 
-    setControllerHide = () => {
+    debounceHidingController = () => {
         if (this.controllerHiddenTimer) {
             clearTimeout(this.controllerHiddenTimer);
             this.controllerHiddenTimer = 0;
@@ -250,8 +257,6 @@ class Impl extends Component<PropsWithDisplayer, State> {
             });
             player.on("ended", this.resetPlayer);
         });
-
-        (window as any).player = player;
     }
 
     setupClose = (element: HTMLSpanElement | null) => {
