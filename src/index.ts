@@ -1,7 +1,7 @@
 import { Plugin } from "white-web-sdk";
+import { VideoJsPlugin } from "./components/VideoJsPlugin";
 import { PluginId } from "./constants";
 import { setOptions, VideoJsPluginOptions } from "./options";
-import { VideoJsPlugin } from "./VideoJsPlugin";
 
 export * from "./constants";
 export { VideoJsPluginOptions } from "./options";

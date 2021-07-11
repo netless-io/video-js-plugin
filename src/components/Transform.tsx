@@ -5,7 +5,7 @@ interface Props {
     scale: number;
 }
 
-export function Transform({ scale = 1, size, children }: PropsWithChildren<Props>) {
+export function FlexTransform({ scale = 1, size, children }: PropsWithChildren<Props>) {
     return (
         <div
             style={{

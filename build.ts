@@ -1,3 +1,4 @@
+import { style } from "@hyrious/esbuild-plugin-style";
 import esbuild, { BuildOptions } from "esbuild";
 import prettyBytes from "pretty-bytes";
 import pkg from "./package.json";
@@ -14,6 +15,7 @@ const common: BuildOptions = {
     sourcemap: true,
     metafile: true,
     loader: { ".svg": "dataurl" },
+    plugins: [style()],
 };
 
 // looks like global `performance` is only available since node16
@@ -44,6 +46,7 @@ const iife = esbuild.build({
     outfile: pkg.jsdelivr,
     globalName: "WhiteWebSdkVideoJsPlugin",
     plugins: [
+        style(),
         // https://github.com/yanm1ng/esbuild-plugin-external-global/blob/master/src/index.ts
         {
             name: pluginNS,

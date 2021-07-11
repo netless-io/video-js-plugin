@@ -1,4 +1,5 @@
 import { importFile } from "@hyrious/esbuild-dev";
+import { style } from "@hyrious/esbuild-plugin-style";
 import cp from "child_process";
 import esbuild from "esbuild";
 import pkg from "./package.json";
@@ -14,7 +15,7 @@ const globals = {
 const a = await esbuild.serve(
     {
         servedir: ".",
-        port: 8000,
+        port: 8001,
     },
     {
         entryPoints: ["src/index.ts"],
@@ -25,6 +26,7 @@ const a = await esbuild.serve(
         metafile: true,
         loader: { ".svg": "dataurl" },
         plugins: [
+            style(),
             // https://github.com/yanm1ng/esbuild-plugin-external-global/blob/master/src/index.ts
             {
                 name: pluginNS,
@@ -50,7 +52,7 @@ const { default: config } = await importFile("./esbuild.config.ts");
 const b = await esbuild.serve(
     {
         servedir: ".",
-        port: 3000,
+        port: 8002,
     },
     {
         ...config.build,
