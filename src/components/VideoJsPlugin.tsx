@@ -118,6 +118,11 @@ class Impl extends Component<PropsWithDisplayer, State> {
         this.props.plugin.putAttributes({ currentTime: t / 1000, hostTime });
     };
 
+    resetPlayer = () => {
+        this.player.autoplay(false);
+        this.props.plugin.putAttributes({ paused: true, currentTime: 0 });
+    };
+
     componentDidMount() {
         this.initPlayer();
         autorun(this.syncPlayerWithAttributes);
@@ -225,6 +230,7 @@ class Impl extends Component<PropsWithDisplayer, State> {
             player.on("timeupdate", () => {
                 this.setState({ updater: !this.state.updater });
             });
+            player.on("ended", this.resetPlayer);
         });
 
         (window as any).player = player;
