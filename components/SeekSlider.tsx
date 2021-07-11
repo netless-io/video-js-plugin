@@ -204,9 +204,10 @@ export default class SeekSlider extends React.Component<VideoSeekSliderProps, Vi
 
     private mouseSeekingHandler = (event: any): void => {
         this.setSeeking(false, event);
+        this.onMouseUp();
     }
 
-    private setSeeking = (state: boolean, evt: React.MouseEvent): void => {
+    private setSeeking = (state: boolean, evt: React.MouseEvent | React.TouchEvent): void => {
         evt.preventDefault();
         this.handleSeeking(evt);
         this.seeking = state;
@@ -306,7 +307,7 @@ export default class SeekSlider extends React.Component<VideoSeekSliderProps, Vi
         }
     }
 
-    private onMouseDown = (event: React.MouseEvent) => {
+    private onMouseDown = (event: React.MouseEvent | React.TouchEvent) => {
         if (this.props.pause && !this.props.paused) {
             this.props.pause();
             this.seekPause = true;
@@ -334,10 +335,16 @@ export default class SeekSlider extends React.Component<VideoSeekSliderProps, Vi
                     className={"track"}
                     ref={ref => this.track = ref}
                     onMouseMove={evt => this.handleTrackHover(false, evt)}
-                    onMouseLeave={evt => this.handleTrackHover(true, evt)}
+                    onMouseLeave={evt => {
+                        this.handleTrackHover(true, evt);
+                    }}
                     onMouseDown={this.onMouseDown}
-                    onTouchStart={() => this.setMobileSeeking(true)}
+                    onTouchStart={(event) => {
+                        this.setMobileSeeking(true);
+                        this.onMouseDown(event);
+                    }}
                     onMouseUp={this.onMouseUp}
+                    onTouchEnd={this.onMouseUp}
                 >
                     <div className="main">
                         {this.renderBufferProgress()}
