@@ -102,11 +102,13 @@ class Impl extends Component<PropsWithDisplayer, State> {
     };
 
     play = () => {
-        this.props.plugin.putAttributes({ paused: false });
+        const hostTime = this.props.room?.calibrationTimestamp;
+        this.props.plugin.putAttributes({ paused: false, hostTime });
     };
 
     pause = () => {
-        this.props.plugin.putAttributes({ paused: true });
+        const currentTime = getCurrentTime(this.props.plugin.attributes, this.props);
+        this.props.plugin.putAttributes({ paused: true, currentTime });
     };
 
     handleVolume = (volume: number) => {
