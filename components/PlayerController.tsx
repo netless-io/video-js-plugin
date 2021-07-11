@@ -8,6 +8,7 @@ import video_play from "./image/video_play.svg";
 import volume2 from "./image/vulme2.svg";
 import volume1 from "./image/vulme1.svg";
 import volume0 from "./image/vulme0.svg";
+import debounce from "lodash.debounce";
 console.log(video_pause)
 
 export type PlayerControllerProps = {
@@ -25,12 +26,15 @@ export type PlayerControllerStates = {
     isPlayerSeeking: boolean;
     currentTime: number;
     isVolumeHover: boolean;
+    seekVolume: number;
 };
 
 
 export default class PlayerController extends React.Component<PlayerControllerProps, PlayerControllerStates> {
     private progressTime: number = 0;
     private stageVolume: number = 0;
+    private updateVolumeTimer: number;
+    private onVolumeSeeking: boolean = false;
 
     public constructor(props: PlayerControllerProps) {
         super(props);
@@ -38,15 +42,23 @@ export default class PlayerController extends React.Component<PlayerControllerPr
             isPlayerSeeking: false,
             currentTime: 0,
             isVolumeHover: false,
+            seekVolume: 1,
         };
         this.stageVolume = props.volume;
     }
 
-
     public componentDidMount(): void {
+        this.updateVolumeTimer = setInterval(() => {
+            if (!this.onVolumeSeeking) {
+                this.setState({ seekVolume: this.props.volume });
+            }
+        }, 100);
     }
 
     public componentWillUnmount() {
+        if (this.updateVolumeTimer) {
+            clearInterval(this.updateVolumeTimer);
+        }
     }
 
     private onClickOperationButton = (): void => {
@@ -105,6 +117,27 @@ export default class PlayerController extends React.Component<PlayerControllerPr
         }
     }
 
+    private onChange = debounce((time: number, offsetTime: number) => {
+        this.props.seekTime(time);
+    }, 50);
+
+    private onVolumeChange = (time: number, offsetTime: number) => {
+        this.setState({ seekVolume: time / 100 });
+        this.changeVolume(time);
+    };
+
+    private changeVolume = debounce((time: number) => {
+        this.props.handleVolume(time / 100);
+    }, 50);
+
+    private onVolumeSeekStart = () => {
+        this.onVolumeSeeking = true;
+    }
+
+    private onVolumeSeekEnd = () => {
+        this.onVolumeSeeking = false;
+    }
+
 
     public render(): React.ReactNode {
         const { fullTime, progressTime } = this.props;
@@ -114,11 +147,12 @@ export default class PlayerController extends React.Component<PlayerControllerPr
                     <SeekSlider
                         fullTime={fullTime}
                         currentTime={this.getCurrentTime(progressTime)}
-                        onChange={(time: number, offsetTime: number) => {
-                            this.props.seekTime(time);
-                        }}
+                        onChange={this.onChange}
                         hideHoverTime={true}
-                        limitTimeTooltipBySides={true} />
+                        limitTimeTooltipBySides={true}
+                        play={this.props.play}
+                        pause={this.props.pause}
+                        paused={this.props.paused} />
                 </div>
                 <div className="player-controller-box">
                     <div className="player-controller-mid">
@@ -151,12 +185,12 @@ export default class PlayerController extends React.Component<PlayerControllerPr
                                 <div className="player-volume-slider">
                                     <SeekSlider
                                         fullTime={100}
-                                        currentTime={100 * this.props.volume}
-                                        onChange={(time: number, offsetTime: number) => {
-                                            this.props.handleVolume(time / 100);
-                                        }}
+                                        currentTime={100 * this.state.seekVolume}
+                                        onChange={this.onVolumeChange}
                                         hideHoverTime={true}
-                                        limitTimeTooltipBySides={true} />
+                                        limitTimeTooltipBySides={true}
+                                        onSeekStart={this.onVolumeSeekStart}
+                                        onSeekEnd={this.onVolumeSeekEnd} />
                                 </div>
                             </div>
                             <div className="player-mid-box-time">

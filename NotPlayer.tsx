@@ -69,7 +69,7 @@ export class NotPlayer extends React.Component<{}, { paused: boolean, fullTime: 
             this.player.one("loadedmetadata", this.onPlayerState)
             this.player.on("timeupdate", this.onPlayerState)
             this.player.on("volumechange", this.onPlayerState)
-        })
+        });
     }
 
     onPlayerState = (): void => {
@@ -90,7 +90,4 @@ export class NotPlayer extends React.Component<{}, { paused: boolean, fullTime: 
             this.player.play();
         }
     };
-
-
-
 }

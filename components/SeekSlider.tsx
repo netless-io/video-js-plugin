@@ -21,6 +21,11 @@ export type VideoSeekSliderProps = {
     sliderHoverColor?: string;
     thumbColor?: string;
     bufferColor?: string;
+    paused?: boolean;
+    play?: () => void;
+    pause?: () => void;
+    onSeekStart?: () => void;
+    onSeekEnd?: () => void;
 };
 
 export type VideoSeekSliderStates = {
@@ -41,6 +46,7 @@ export default class SeekSlider extends React.Component<VideoSeekSliderProps, Vi
     private readonly offset: number = 0;
     private readonly secondsPrefix: string = "00:00:";
     private readonly minutesPrefix: string = "00:";
+    private seekPause: boolean = false;
 
     public constructor(props: VideoSeekSliderProps) {
         super(props);
@@ -300,6 +306,27 @@ export default class SeekSlider extends React.Component<VideoSeekSliderProps, Vi
         }
     }
 
+    private onMouseDown = (event: React.MouseEvent) => {
+        if (this.props.pause && !this.props.paused) {
+            this.props.pause();
+            this.seekPause = true;
+        }
+        this.setSeeking(true, event);
+        if (this.props.onSeekStart) {
+            this.props.onSeekStart();
+        }
+    }
+
+    private onMouseUp = () => {
+        if (this.props.play && this.seekPause) {
+            this.props.play();
+            this.seekPause = false;
+        }
+        if (this.props.onSeekEnd) {
+            this.props.onSeekEnd();
+        }
+    }
+
     public render(): React.ReactNode {
         return (
             <div className="ui-video-seek-slider">
@@ -308,8 +335,9 @@ export default class SeekSlider extends React.Component<VideoSeekSliderProps, Vi
                     ref={ref => this.track = ref}
                     onMouseMove={evt => this.handleTrackHover(false, evt)}
                     onMouseLeave={evt => this.handleTrackHover(true, evt)}
-                    onMouseDown={evt => this.setSeeking(true, evt)}
+                    onMouseDown={this.onMouseDown}
                     onTouchStart={() => this.setMobileSeeking(true)}
+                    onMouseUp={this.onMouseUp}
                 >
                     <div className="main">
                         {this.renderBufferProgress()}
