@@ -28,6 +28,7 @@ export class VideoJsPlugin extends Component<Props> {
 
 interface State {
     NoSound: boolean;
+    MediaError: boolean;
     updater: boolean;
     controllerVisible: boolean;
 }
@@ -38,7 +39,7 @@ class Impl extends Component<PropsWithDisplayer, State> {
     closeIcon: HTMLSpanElement | null = null;
     alertMask: HTMLDivElement | null = null;
     container = React.createRef<HTMLDivElement>();
-    player!: VideoJsPlayer;
+    player: VideoJsPlayer | undefined;
     controllerHiddenTimer = 0;
     syncPlayerTimer = 0;
     retryCount = 0;
@@ -47,6 +48,7 @@ class Impl extends Component<PropsWithDisplayer, State> {
         super(props);
         this.state = {
             NoSound: false,
+            MediaError: false,
             updater: false,
             controllerVisible: false,
         };
@@ -95,6 +97,11 @@ class Impl extends Component<PropsWithDisplayer, State> {
                 {!this.props.plugin.context?.hideMuteAlert && this.state.NoSound && (
                     <div ref={this.setupAlert} className="videojs-plugin-muted-alert"></div>
                 )}
+                {this.state.MediaError && (
+                    <div className="videojs-plugin-recovery-mode">
+                        <button ref={this.setupReload}>Reload Player</button>
+                    </div>
+                )}
             </div>
         );
     }
@@ -134,7 +141,7 @@ class Impl extends Component<PropsWithDisplayer, State> {
     };
 
     resetPlayer = () => {
-        this.player.autoplay(false);
+        this.player?.autoplay(false);
         this.debug(">>> ended", { paused: true, currentTime: 0 });
         this.isEnabled() && this.props.plugin.putAttributes({ paused: true, currentTime: 0 });
     };
@@ -199,13 +206,16 @@ class Impl extends Component<PropsWithDisplayer, State> {
 
     catchPlayFail = (err: Error) => {
         if (String(err).includes("interact")) {
-            this.player.autoplay("any");
+            this.player?.autoplay("any");
             this.setState({ NoSound: true });
         } else {
             if (err instanceof videojs.MediaError) {
                 if (this.retryCount <= 3) {
                     this.initPlayer();
                     this.retryCount = this.retryCount + 1;
+                } else {
+                    this.debug("catch videojs media error", err);
+                    this.setState({ MediaError: true });
                 }
             }
             this.debug("catch error", err);
@@ -222,8 +232,9 @@ class Impl extends Component<PropsWithDisplayer, State> {
         }
     };
 
-    async initPlayer() {
+    initPlayer = async () => {
         this.player?.dispose();
+        this.player = undefined;
 
         this.debug("creating elements ...");
         const { src, poster } = this.props.plugin.attributes;
@@ -270,7 +281,9 @@ class Impl extends Component<PropsWithDisplayer, State> {
         });
 
         player.on("error", this.catchPlayFail);
-    }
+
+        this.setState({ MediaError: false });
+    };
 
     setupClose = (element: HTMLSpanElement | null) => {
         if (element) {
@@ -286,6 +299,13 @@ class Impl extends Component<PropsWithDisplayer, State> {
             element.addEventListener("click", this.fixPlayFail);
         }
         this.alertMask = element;
+    };
+
+    setupReload = (element: HTMLButtonElement | null) => {
+        if (element) {
+            element.addEventListener("touchstart", this.initPlayer);
+            element.addEventListener("click", this.initPlayer);
+        }
     };
 
     removeSelf = () => this.props.plugin.remove();

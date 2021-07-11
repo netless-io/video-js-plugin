@@ -91,3 +91,19 @@
     justify-content: center;
     color: white;
 }
+.videojs-plugin-recovery-mode {
+    pointer-events: auto;
+    cursor: pointer;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 44;
+}
+.videojs-plugin-recovery-mode button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
