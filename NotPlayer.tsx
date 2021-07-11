@@ -64,22 +64,24 @@ export class NotPlayer extends React.Component<{}, NotPlayerStates> {
         this.player.volume(data);
     }
 
+    private displayController = () => {
+        this.setState({ isDisplay: true });
+        this.setControllerHide();
+    }
+
     render() {
         return (
             <div>
-                <div style={{ width: 600, height: 400, position: "relative" }}
-                    onMouseEnter={() => {
-                        this.setState({ isDisplay: true });
-                        this.setControllerHide();
-                    }}
-                    onMouseMove={() => {
-                        this.setState({ isDisplay: true  });
-                        this.setControllerHide();
-                    }}
+                <div style={{ width: "100%", height: 500, position: "relative" }}
+                    onMouseEnter={this.displayController}
+                    onMouseMove={this.displayController}
+                    onTouchStart={this.displayController}
                 >
-                    <video className="video-js" ref={this.video}></video>
-                    <span className="title">Audio Player</span>
-                    <span className="close-icon">&times;</span>
+                    <video className="video-js" ref={this.video} width="100%" height="auto" playsInline webkit-playsinline="true"></video>
+                    <div className="video-header" style={{ display: this.state.isDisplay ? "flex" : "none" }}>
+                        <span className="title">Audio Player</span>
+                        <span className="close-icon">&times;</span>
+                    </div>
                     <div
                     // style={{ opacity: this.state.isControllerShow ? "1" : "0" }}
                     >

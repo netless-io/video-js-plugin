@@ -104,7 +104,9 @@ export default class PlayerController extends React.Component<PlayerControllerPr
     }
 
     private onChange = debounce((time: number, offsetTime: number) => {
-        this.props.seekTime(time);
+        if (!isNaN(time)) {
+            this.props.seekTime(time);
+        }
     }, 50);
 
     private onVolumeChange = (time: number, offsetTime: number) => {
