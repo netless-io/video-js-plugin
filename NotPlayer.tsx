@@ -14,11 +14,14 @@ export type NotPlayerStates = {
     volume: number,
     isControllerShow: boolean,
     bufferedPercent: number,
+    isDisplay: boolean,
 }
 
 export class NotPlayer extends React.Component<{}, NotPlayerStates> {
     video = React.createRef<HTMLVideoElement>();
     player: videojs.VideoJsPlayer;
+    private controllerHiddenTimer: number;
+
 
     constructor(props: {}) {
         super(props);
@@ -29,8 +32,25 @@ export class NotPlayer extends React.Component<{}, NotPlayerStates> {
             volume: 1,
             isControllerShow: false,
             bufferedPercent: 0,
+            isDisplay: true,
         };
     }
+
+    public componentWillUnmount(): void {
+        if (this.controllerHiddenTimer) {
+            clearTimeout(this.controllerHiddenTimer);
+        }
+    }
+
+    private setControllerHide = () => {
+        if (this.controllerHiddenTimer) {
+            clearTimeout(this.controllerHiddenTimer);
+        }
+        this.controllerHiddenTimer = setTimeout(() => {
+            this.setState({ isDisplay: false });
+        }, 3000);
+    }
+
 
     private play = (): void => {
         this.player.play();
@@ -49,10 +69,12 @@ export class NotPlayer extends React.Component<{}, NotPlayerStates> {
             <div>
                 <div style={{ width: 600, height: 400, position: "relative" }}
                     onMouseEnter={() => {
-                        this.setState({ isControllerShow: true });
+                        this.setState({ isDisplay: true });
+                        this.setControllerHide();
                     }}
-                    onMouseLeave={() => {
-                        this.setState({ isControllerShow: false });
+                    onMouseMove={() => {
+                        this.setState({ isDisplay: true  });
+                        this.setControllerHide();
                     }}
                 >
                     <video className="video-js" ref={this.video}></video>
@@ -70,7 +92,8 @@ export class NotPlayer extends React.Component<{}, NotPlayerStates> {
                             fullTime={this.state.fullTime * 1000}
                             seekTime={this.seekTime}
                             bufferProgress={this.state.fullTime * 1000 * this.state.bufferedPercent}
-                            progressTime={this.state.progressTime * 1000} />
+                            progressTime={this.state.progressTime * 1000}
+                            isDisplay={this.state.isDisplay} />
                     </div>
                 </div>
             </div>
@@ -93,6 +116,7 @@ export class NotPlayer extends React.Component<{}, NotPlayerStates> {
             this.player.on("timeupdate", this.onPlayerState)
             this.player.on("volumechange", this.onPlayerState)
         });
+        this.setControllerHide();
     }
 
     onPlayerState = (): void => {
