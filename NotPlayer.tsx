@@ -7,7 +7,16 @@ console.log(
     "font-size: 20px; font-weight: bold; color: cyan"
 );
 
-export class NotPlayer extends React.Component<{}, { paused: boolean, fullTime: number, progressTime: number, volume: number }> {
+export type NotPlayerStates = {
+    paused: boolean,
+    fullTime: number,
+    progressTime: number,
+    volume: number,
+    isControllerShow: boolean,
+    bufferedPercent: number,
+}
+
+export class NotPlayer extends React.Component<{}, NotPlayerStates> {
     video = React.createRef<HTMLVideoElement>();
     player: videojs.VideoJsPlayer;
 
@@ -18,6 +27,8 @@ export class NotPlayer extends React.Component<{}, { paused: boolean, fullTime: 
             fullTime: 0,
             progressTime: 0,
             volume: 1,
+            isControllerShow: false,
+            bufferedPercent: 0,
         };
     }
 
@@ -36,19 +47,31 @@ export class NotPlayer extends React.Component<{}, { paused: boolean, fullTime: 
     render() {
         return (
             <div>
-                <div style={{ width: 600, height: 400, position: "relative" }}>
+                <div style={{ width: 600, height: 400, position: "relative" }}
+                    onMouseEnter={() => {
+                        this.setState({ isControllerShow: true });
+                    }}
+                    onMouseLeave={() => {
+                        this.setState({ isControllerShow: false });
+                    }}
+                >
                     <video className="video-js" ref={this.video}></video>
                     <span className="title">Audio Player</span>
                     <span className="close-icon">&times;</span>
-                    <PlayerController
-                        pause={this.pause}
-                        volume={this.state.volume}
-                        handleVolume={this.handleVolume}
-                        play={this.play}
-                        paused={this.state.paused}
-                        fullTime={this.state.fullTime * 1000}
-                        seekTime={this.seekTime}
-                        progressTime={this.state.progressTime * 1000} />
+                    <div
+                    // style={{ opacity: this.state.isControllerShow ? "1" : "0" }}
+                    >
+                        <PlayerController
+                            pause={this.pause}
+                            volume={this.state.volume}
+                            handleVolume={this.handleVolume}
+                            play={this.play}
+                            paused={this.state.paused}
+                            fullTime={this.state.fullTime * 1000}
+                            seekTime={this.seekTime}
+                            bufferProgress={this.state.fullTime * 1000 * this.state.bufferedPercent}
+                            progressTime={this.state.progressTime * 1000} />
+                    </div>
                 </div>
             </div>
         );
@@ -61,7 +84,7 @@ export class NotPlayer extends React.Component<{}, { paused: boolean, fullTime: 
     componentDidMount() {
         this.player = videojs(this.video.current!);
         this.player.src(
-            "https://beings.oss-cn-hangzhou.aliyuncs.com/test/aaa59a55-81ff-45e8-8185-fd72c695def4/1606277539701637%E7%9A%84%E5%89%AF%E6%9C%AC.mp4"
+            "https://beings.oss-cn-hangzhou.aliyuncs.com/test/d009b7ae-9b37-434f-a109-01ad01475087/oceans.mp4"
         );
         this.player.on("ready", () => {
             this.player.on("play", this.onPlayerState)
@@ -78,6 +101,7 @@ export class NotPlayer extends React.Component<{}, { paused: boolean, fullTime: 
             fullTime: this.player.duration(),
             volume: this.player.volume(),
             progressTime: this.player.currentTime(),
+            bufferedPercent: this.player.bufferedPercent()
         });
     }
 

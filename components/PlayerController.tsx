@@ -20,6 +20,7 @@ export type PlayerControllerProps = {
     seekTime: (time: number) => void;
     handleVolume: (data: number) => void;
     volume: number;
+    bufferProgress: number;
 }
 
 export type PlayerControllerStates = {
@@ -148,6 +149,8 @@ export default class PlayerController extends React.Component<PlayerControllerPr
                         fullTime={fullTime}
                         currentTime={this.getCurrentTime(progressTime)}
                         onChange={this.onChange}
+                        bufferProgress={this.props.bufferProgress}
+                        bufferColor={"rgba(255,255,255,0.3)"}
                         hideHoverTime={true}
                         limitTimeTooltipBySides={true}
                         play={this.props.play}
@@ -193,6 +196,8 @@ export default class PlayerController extends React.Component<PlayerControllerPr
                                         onSeekEnd={this.onVolumeSeekEnd} />
                                 </div>
                             </div>
+                        </div>
+                        <div>
                             <div className="player-mid-box-time">
                                 {displayWatch(Math.floor(progressTime / 1000))} / {displayWatch(Math.floor(fullTime / 1000))}
                             </div>
