@@ -28,6 +28,7 @@ export type PlayerControllerStates = {
     isVolumeHover: boolean;
     seekVolume: number;
     isDisplay: boolean;
+    currentTime: number;
 };
 
 
@@ -43,6 +44,7 @@ export default class PlayerController extends React.Component<PlayerControllerPr
             isVolumeHover: false,
             seekVolume: 1,
             isDisplay: true,
+            currentTime: 0,
         };
         this.stageVolume = props.volume;
     }
@@ -51,6 +53,9 @@ export default class PlayerController extends React.Component<PlayerControllerPr
         this.updateVolumeTimer = setInterval(() => {
             if (!this.onVolumeSeeking) {
                 this.setState({ seekVolume: this.props.volume });
+            }
+            if (!this.state.isPlayerSeeking) {
+                this.setState({ currentTime: this.props.progressTime });
             }
         }, 100);
     }
@@ -103,10 +108,15 @@ export default class PlayerController extends React.Component<PlayerControllerPr
         }
     }
 
-    private onChange = debounce((time: number, offsetTime: number) => {
+    private onChange = (time: number, offsetTime: number) => {
+        this.setState({ currentTime: time });
         if (!isNaN(time)) {
-            this.props.seekTime(time);
+            this.changeTime(time);
         }
+    };
+
+    private changeTime = debounce((time: number) => {
+        this.props.seekTime(time);
     }, 50);
 
     private onVolumeChange = (time: number, offsetTime: number) => {
@@ -137,7 +147,7 @@ export default class PlayerController extends React.Component<PlayerControllerPr
                 <div className="player-mid-box">
                     <SeekSlider
                         fullTime={fullTime}
-                        currentTime={progressTime}
+                        currentTime={this.state.currentTime}
                         onChange={this.onChange}
                         bufferProgress={this.props.bufferProgress}
                         bufferColor={"rgba(255,255,255,0.3)"}

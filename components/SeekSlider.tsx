@@ -204,6 +204,7 @@ export default class SeekSlider extends React.Component<VideoSeekSliderProps, Vi
 
     private mouseSeekingHandler = (event: any): void => {
         this.setSeeking(false, event);
+        this.onMouseUp();
     }
 
     private setSeeking = (state: boolean, evt: React.MouseEvent | React.TouchEvent): void => {
@@ -334,7 +335,9 @@ export default class SeekSlider extends React.Component<VideoSeekSliderProps, Vi
                     className={"track"}
                     ref={ref => this.track = ref}
                     onMouseMove={evt => this.handleTrackHover(false, evt)}
-                    onMouseLeave={evt => this.handleTrackHover(true, evt)}
+                    onMouseLeave={evt => {
+                        this.handleTrackHover(true, evt);
+                    }}
                     onMouseDown={this.onMouseDown}
                     onTouchStart={(event) => {
                         this.setMobileSeeking(true);
