@@ -41,6 +41,7 @@ class Impl extends Component<PropsWithDisplayer, State> {
     player!: VideoJsPlayer;
     controllerHiddenTimer = 0;
     syncPlayerTimer = 0;
+    retryCount = 0;
 
     constructor(props: PropsWithDisplayer) {
         super(props);
@@ -201,6 +202,12 @@ class Impl extends Component<PropsWithDisplayer, State> {
             this.player.autoplay("any");
             this.setState({ NoSound: true });
         } else {
+            if (err instanceof videojs.MediaError) {
+                if (this.retryCount <= 3) {
+                    this.initPlayer();
+                    this.retryCount = this.retryCount + 1;
+                }
+            }
             this.debug("catch error", err);
         }
     };
