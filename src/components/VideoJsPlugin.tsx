@@ -71,7 +71,7 @@ class Impl extends Component<PropsWithDisplayer, State> {
             >
                 <div className="video-js-plugin-player" ref={this.container}></div>
                 <div className="video-js-plugin-header">
-                    <div className="video-js-plugin-title">Sync Player</div>
+                    {/* <div className="video-js-plugin-title">Sync Player</div> */}
                     <div className="videojs-plugin-close-icon" ref={this.setupClose}>
                         &times;
                     </div>
