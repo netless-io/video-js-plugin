@@ -21,6 +21,7 @@ export type VideoSeekSliderProps = {
     pause?: () => void;
     onSeekStart?: () => void;
     onSeekEnd?: () => void;
+    scale?: number;
 };
 
 export type VideoSeekSliderStates = {
@@ -97,11 +98,12 @@ export default class SeekSlider extends Component<VideoSeekSliderProps, VideoSee
 
     private changeCurrentTimePosition(pageX: number): void {
         if (this.track) {
-            let position: number = pageX - this.track.getBoundingClientRect().left;
+            const scale = this.props.scale || 1;
+            let position = (pageX - this.track.getBoundingClientRect().left) / scale;
             position = Math.min(this.state.trackWidth, Math.max(0, position));
             this.setState({ seekHoverPosition: position });
-            const percent: number = position / this.state.trackWidth;
-            const time: number = +(percent * this.props.total).toFixed(0);
+            const percent = position / this.state.trackWidth;
+            const time = +(percent * this.props.total).toFixed(0);
             this.props.onChange(time);
         }
     }
@@ -114,8 +116,14 @@ export default class SeekSlider extends Component<VideoSeekSliderProps, VideoSee
 
     private handleTrackHover = (clear: boolean, evt: React.MouseEvent): void => {
         if (this.track) {
-            const position = clear ? 0 : evt.pageX - this.track.getBoundingClientRect().left;
-            this.setState({ seekHoverPosition: position });
+            const scale = this.props.scale || 1;
+            let position: number;
+            if (clear) {
+                position = 0;
+            } else {
+                position = (evt.pageX - this.track.getBoundingClientRect().left) / scale;
+            }
+            this.setState({ seekHoverPosition: position, trackWidth: this.track.offsetWidth });
         }
     };
 
@@ -278,7 +286,7 @@ export default class SeekSlider extends Component<VideoSeekSliderProps, VideoSee
         return (
             <div className="ui-video-seek-slider">
                 <div
-                    className={"track"}
+                    className="track"
                     ref={ref => (this.track = ref)}
                     onMouseMove={evt => this.handleTrackHover(false, evt)}
                     onMouseLeave={evt => this.handleTrackHover(true, evt)}

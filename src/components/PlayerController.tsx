@@ -19,6 +19,7 @@ export type PlayerControllerProps = {
     volume: number;
     bufferProgress: number;
     visible: boolean;
+    scale?: number;
 };
 
 export type PlayerControllerStates = {
@@ -155,6 +156,7 @@ export default class PlayerController extends Component<
                         play={this.props.play}
                         pause={this.props.pause}
                         paused={this.props.paused}
+                        scale={this.props.scale}
                     />
                 </div>
                 <div className="player-controller-box">
@@ -189,6 +191,7 @@ export default class PlayerController extends Component<
                                         limitTimeTooltipBySides={true}
                                         onSeekStart={this.onVolumeSeekStart}
                                         onSeekEnd={this.onVolumeSeekEnd}
+                                        scale={this.props.scale}
                                     />
                                 </div>
                             </div>

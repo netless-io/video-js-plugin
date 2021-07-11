@@ -54,9 +54,11 @@ class Impl extends Component<PropsWithDisplayer, State> {
     }
 
     render() {
+        const { room, player } = this.props;
         const s = this.props.plugin.attributes;
         const duration = (this.player?.duration() || 1e3) * 1000;
         const bufferedPercent = this.player?.bufferedPercent() || 0;
+        const displayer = room || player;
 
         // const controllerVisible = this.state.isAudio || this.state.controllerVisible;
         return (
@@ -87,6 +89,7 @@ class Impl extends Component<PropsWithDisplayer, State> {
                     bufferProgress={duration * bufferedPercent}
                     progressTime={getCurrentTime(s, this.props) * 1000}
                     visible
+                    scale={displayer?.state.cameraState.scale}
                 />
                 {!this.props.plugin.context?.hideMuteAlert && this.state.NoSound && (
                     <div ref={this.setupAlert} className="videojs-plugin-muted-alert"></div>
