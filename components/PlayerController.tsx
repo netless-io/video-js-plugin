@@ -21,6 +21,7 @@ export type PlayerControllerProps = {
     handleVolume: (data: number) => void;
     volume: number;
     bufferProgress: number;
+    isDisplay: boolean;
 }
 
 export type PlayerControllerStates = {
@@ -28,6 +29,7 @@ export type PlayerControllerStates = {
     currentTime: number;
     isVolumeHover: boolean;
     seekVolume: number;
+    isDisplay: boolean;
 };
 
 
@@ -44,6 +46,7 @@ export default class PlayerController extends React.Component<PlayerControllerPr
             currentTime: 0,
             isVolumeHover: false,
             seekVolume: 1,
+            isDisplay: true,
         };
         this.stageVolume = props.volume;
     }
@@ -143,7 +146,9 @@ export default class PlayerController extends React.Component<PlayerControllerPr
     public render(): React.ReactNode {
         const { fullTime, progressTime } = this.props;
         return (
-            <div className="player-schedule">
+            <div 
+                className="player-schedule" 
+                style={{ display: this.props.isDisplay ? "block" : "none" }}>
                 <div className="player-mid-box">
                     <SeekSlider
                         fullTime={fullTime}
