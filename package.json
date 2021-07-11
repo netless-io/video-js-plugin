@@ -1,0 +1,17 @@
+{
+  "name": "@test/not-player",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "esbuild-serve"
+  },
+  "keywords": [],
+  "author": "hyrious <hyrious@outlook.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/react": "^17.0.14",
+    "@types/react-dom": "^17.0.9",
+    "@types/video.js": "^7.3.23"
+  }
+}

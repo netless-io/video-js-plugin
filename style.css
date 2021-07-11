@@ -1,0 +1,46 @@
+.video-js {
+    width: 100%;
+    height: 100%;
+}
+.title {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: white;
+    padding: 4px 6px;
+    font-size: 12px;
+}
+.close-icon {
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: white;
+    padding: 2px 8px;
+    cursor: pointer;
+    user-select: none;
+    opacity: 0.5;
+}
+.close-icon:hover {
+    opacity: 1;
+}
+.control-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    font-family: VideoJS;
+    user-select: none;
+}
+.control-bar .play::before,
+.control-bar .pause::before {
+    display: inline-block;
+    color: white;
+    padding: 8px;
+    cursor: pointer;
+}
+.control-bar .play::before {
+    content: "\f101";
+}
+.control-bar .pause::before {
+    content: "\f103";
+}
