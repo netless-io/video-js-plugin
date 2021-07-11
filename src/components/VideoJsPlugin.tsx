@@ -109,30 +109,30 @@ class Impl extends Component<PropsWithDisplayer, State> {
     play = () => {
         const hostTime = this.props.room?.calibrationTimestamp;
         this.debug(">>> play", { paused: false, hostTime });
-        this.props.plugin.putAttributes({ paused: false, hostTime });
+        this.isEnabled() && this.props.plugin.putAttributes({ paused: false, hostTime });
     };
 
     pause = () => {
         const currentTime = getCurrentTime(this.props.plugin.attributes, this.props);
         this.debug(">>> pause", { paused: true, currentTime });
-        this.props.plugin.putAttributes({ paused: true, currentTime });
+        this.isEnabled() && this.props.plugin.putAttributes({ paused: true, currentTime });
     };
 
     handleVolume = (volume: number) => {
         this.debug(">>> volume", { volume });
-        this.props.plugin.putAttributes({ volume });
+        this.isEnabled() && this.props.plugin.putAttributes({ volume });
     };
 
     seekTime = (t: number) => {
         const hostTime = this.props.room?.calibrationTimestamp;
         this.debug(">>> seek", { currentTime: t / 1000, hostTime });
-        this.props.plugin.putAttributes({ currentTime: t / 1000, hostTime });
+        this.isEnabled() && this.props.plugin.putAttributes({ currentTime: t / 1000, hostTime });
     };
 
     resetPlayer = () => {
         this.player.autoplay(false);
         this.debug(">>> ended", { paused: true, currentTime: 0 });
-        this.props.plugin.putAttributes({ paused: true, currentTime: 0 });
+        this.isEnabled() && this.props.plugin.putAttributes({ paused: true, currentTime: 0 });
     };
 
     componentDidMount() {
