@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import videojs, { VideoJsPlayer } from "video.js";
 import { autorun, CNode, Player, PlayerConsumer, Room, RoomConsumer } from "white-web-sdk";
+import { options } from "../options";
 import { Props } from "../types";
+import { getCurrentTime, nextFrame } from "../utils";
 import PlayerController from "./PlayerController";
 import "./style.css";
 import { FlexTransform } from "./Transform";
@@ -26,45 +28,42 @@ export class VideoJsPlugin extends Component<Props> {
 
 interface State {
     NoSound: boolean;
-
-    fullTime: number; // s
-    bufferedPercent: number;
-    isDisplay: boolean;
+    updater: boolean;
+    controllerVisible: boolean;
 }
 
-type PropsWithDisplayer = Props & { room?: Room; player?: Player };
+export type PropsWithDisplayer = Props & { room?: Room; player?: Player };
 
 class Impl extends Component<PropsWithDisplayer, State> {
     container = React.createRef<HTMLDivElement>();
-    player: VideoJsPlayer | undefined;
+    player!: VideoJsPlayer;
     controllerHiddenTimer = 0;
+    syncPlayerTimer = 0;
 
     constructor(props: PropsWithDisplayer) {
         super(props);
         this.state = {
             NoSound: false,
-            fullTime: 0,
-            bufferedPercent: 0,
-            isDisplay: false,
+            updater: false,
+            controllerVisible: false,
         };
 
         (window as any).plugin = this.props.plugin;
     }
 
     render() {
-        const { room, player, plugin } = this.props;
-        const { volume, paused, currentTime, hostTime } = plugin.attributes;
-        const progressTime = currentTime + (room!.calibrationTimestamp - hostTime) / 1000;
-
+        const s = this.props.plugin.attributes;
+        const duration = (this.player?.duration() || 1e3) * 1000;
+        const bufferedPercent = this.player?.bufferedPercent() || 0;
         return (
             <div
                 className="video-js-plugin-container"
                 onMouseEnter={() => {
-                    this.setState({ isDisplay: true });
+                    this.setState({ controllerVisible: true });
                     this.setControllerHide();
                 }}
                 onMouseMove={() => {
-                    this.setState({ isDisplay: true });
+                    this.setState({ controllerVisible: true });
                     this.setControllerHide();
                 }}
             >
@@ -72,15 +71,15 @@ class Impl extends Component<PropsWithDisplayer, State> {
                 <div className="videojs-plugin-close-icon">&times;</div>
                 <PlayerController
                     pause={this.pause}
-                    volume={volume}
+                    volume={s.volume}
                     handleVolume={this.handleVolume}
                     play={this.play}
-                    paused={paused}
-                    fullTime={this.state.fullTime * 1000}
+                    paused={s.paused}
+                    duration={duration}
                     seekTime={this.seekTime}
-                    bufferProgress={this.state.fullTime * 1000 * this.state.bufferedPercent}
-                    progressTime={progressTime * 1000}
-                    isDisplay={this.state.isDisplay}
+                    bufferProgress={duration * bufferedPercent}
+                    progressTime={s.currentTime * 1000}
+                    visible={this.state.controllerVisible}
                 />
             </div>
         );
@@ -100,38 +99,49 @@ class Impl extends Component<PropsWithDisplayer, State> {
 
     seekTime = (t: number) => {
         const hostTime = this.props.room?.calibrationTimestamp;
-        this.props.plugin.putAttributes({ currentTime: t, hostTime });
+        this.props.plugin.putAttributes({ currentTime: t / 1000, hostTime });
     };
 
     componentDidMount() {
         this.initPlayer();
-        autorun(() => {
-            this.props.plugin.context;
-            const player = this.player!;
-            const s = this.props.plugin.attributes;
-            console.log(JSON.stringify(s));
-
-            if (player.paused() !== s.paused) {
-                if (s.paused) {
-                    player!.pause();
-                } else {
-                    player!.play();
-                }
-            }
-
-            if (player.muted() !== s.muted) {
-                player!.muted(s.muted);
-            }
-
-            if (player.volume() !== s.volume) {
-                player!.volume(s.volume);
-            }
-
-            if (player.currentTime() !== s.currentTime) {
-                player.currentTime(s.currentTime);
-            }
-        });
+        autorun(this.syncPlayerWithAttributes);
+        this.syncPlayerTimer = setInterval(this.syncPlayerWithAttributes, options.syncInterval);
     }
+
+    componentWillUnmount() {
+        this.player?.dispose();
+        clearInterval(this.syncPlayerTimer);
+    }
+
+    syncPlayerWithAttributes = () => {
+        void this.props.plugin.context;
+        const s = this.props.plugin.attributes;
+        console.log(JSON.stringify(s));
+
+        const player = this.player;
+        if (!player) return;
+
+        if (player.paused() !== s.paused) {
+            if (s.paused) {
+                player.pause();
+            } else {
+                player.play();
+            }
+        }
+
+        if (player.muted() !== s.muted) {
+            player.muted(s.muted);
+        }
+
+        if (player.volume() !== s.volume) {
+            player.volume(s.volume);
+        }
+
+        const currentTime = getCurrentTime(s, this.props);
+        if (Math.abs(player.currentTime() - currentTime) > options.currentTimeMaxError) {
+            player.currentTime(currentTime);
+        }
+    };
 
     setControllerHide = () => {
         if (this.controllerHiddenTimer) {
@@ -139,12 +149,12 @@ class Impl extends Component<PropsWithDisplayer, State> {
             this.controllerHiddenTimer = 0;
         }
         this.controllerHiddenTimer = setTimeout(() => {
-            this.setState({ isDisplay: false });
+            this.setState({ controllerVisible: false });
             this.controllerHiddenTimer = 0;
         }, 3000);
     };
 
-    initPlayer() {
+    async initPlayer() {
         this.player?.dispose();
 
         const { src, poster } = this.props.plugin.attributes;
@@ -168,21 +178,20 @@ class Impl extends Component<PropsWithDisplayer, State> {
         wrapper.appendChild(video);
         this.container.current!.appendChild(wrapper);
 
+        // NOTE: don't remove this line!
+        await nextFrame();
+
         const player = videojs(video);
         this.player = player;
 
         player.one("loadedmetadata", () => {
-            this.setState({
-                fullTime: this.player!.duration(),
-                bufferedPercent: this.player!.bufferedPercent(),
-            });
+            this.setState({ updater: !this.state.updater });
         });
 
         player.on("ready", () => {
+            options.onPlayer?.(player);
             player.on("timeupdate", () => {
-                this.setState({
-                    bufferedPercent: this.player!.bufferedPercent(),
-                });
+                this.setState({ updater: !this.state.updater });
             });
         });
 

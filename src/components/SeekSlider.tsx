@@ -1,17 +1,12 @@
 import React, { Component } from "react";
 import "./SeekSlider.css";
 
-export type Time = {
-    hh: string;
-    mm: string;
-    ss: string;
-};
+export type Time = { hh: string; mm: string; ss: string };
 
 export type VideoSeekSliderProps = {
-    fullTime: number;
-    currentTime: number;
-    onChange: (time: number, offsetTime: number) => void;
-    offset?: number;
+    total: number;
+    current: number;
+    onChange: (time: number) => void;
     bufferProgress?: number;
     hideHoverTime?: boolean;
     secondsPrefix?: string;
@@ -43,16 +38,13 @@ export default class SeekSlider extends Component<VideoSeekSliderProps, VideoSee
     private mobileSeeking = false;
     private track: HTMLDivElement | null = null;
     private hoverTime: HTMLDivElement | null = null;
-    private readonly offset: number = 0;
-    private readonly secondsPrefix: string = "00:00:";
-    private readonly minutesPrefix: string = "00:";
+    private offset: number = 0;
+    private secondsPrefix: string = "00:00:";
+    private minutesPrefix: string = "00:";
     private seekPause: boolean = false;
 
     public constructor(props: VideoSeekSliderProps) {
         super(props);
-        if (this.props.offset) {
-            this.offset = this.props.offset;
-        }
         if (this.props.secondsPrefix) {
             this.secondsPrefix = this.props.secondsPrefix;
         }
@@ -106,17 +98,15 @@ export default class SeekSlider extends Component<VideoSeekSliderProps, VideoSee
     private changeCurrentTimePosition(pageX: number): void {
         if (this.track) {
             let position: number = pageX - this.track.getBoundingClientRect().left;
-            position = position < 0 ? 0 : position;
-            position = position > this.track.offsetWidth ? this.track.offsetWidth : position;
+            position = Math.min(this.track.offsetWidth, Math.max(0, position));
             this.setState({ seekHoverPosition: position });
-            const percent: number = (position * 100) / this.track.offsetWidth;
-            const time: number = +(percent * (this.props.fullTime / 100)).toFixed(0);
-            this.props.onChange(time, time + this.offset);
+            const percent: number = position / this.track.offsetWidth;
+            const time: number = +(percent * this.props.total).toFixed(0);
+            this.props.onChange(time);
         }
     }
 
     private setTrackWidthState = (): void => {
-        console.log("setTrackWidthState", this.track?.offsetWidth);
         if (this.track) {
             this.setState({ trackWidth: this.track.offsetWidth });
         }
@@ -128,14 +118,12 @@ export default class SeekSlider extends Component<VideoSeekSliderProps, VideoSee
             if (clear) {
                 position = 0;
             }
-            this.setState({
-                seekHoverPosition: position,
-            });
+            this.setState({ seekHoverPosition: position });
         }
     };
 
     private getPositionStyle(time: number): TransformType {
-        const position: number = (time * 100) / this.props.fullTime;
+        const position: number = (time * 100) / this.props.total;
 
         return {
             transform: `scaleX(${position / 100})`,
@@ -143,8 +131,7 @@ export default class SeekSlider extends Component<VideoSeekSliderProps, VideoSee
     }
 
     private getThumbHandlerPosition(): TransformType {
-        const position: number =
-            this.state.trackWidth / (this.props.fullTime / this.props.currentTime);
+        const position: number = this.state.trackWidth / (this.props.total / this.props.current);
         return {
             transform: `translateX(${position}px)`,
         };
@@ -189,11 +176,11 @@ export default class SeekSlider extends Component<VideoSeekSliderProps, VideoSee
 
     private getHoverTime(): string {
         const percent: number = (this.state.seekHoverPosition * 100) / this.state.trackWidth;
-        const time: number = Math.floor(+(percent * (this.props.fullTime / 100)));
+        const time: number = Math.floor(+(percent * (this.props.total / 100)));
         const times: Time = this.secondsToTime(time);
-        if (this.props.fullTime + this.offset < 60) {
+        if (this.props.total + this.offset < 60) {
             return this.secondsPrefix + times.ss;
-        } else if (this.props.fullTime + this.offset < 3600) {
+        } else if (this.props.total + this.offset < 3600) {
             return this.minutesPrefix + times.mm + ":" + times.ss;
         } else {
             return times.hh + ":" + times.mm + ":" + times.ss;
@@ -208,9 +195,7 @@ export default class SeekSlider extends Component<VideoSeekSliderProps, VideoSee
         evt.preventDefault();
         this.handleSeeking(evt);
         this.seeking = state;
-        this.setState({
-            seekHoverPosition: !state ? 0 : this.state.seekHoverPosition,
-        });
+        this.setState({ seekHoverPosition: !state ? 0 : this.state.seekHoverPosition });
     };
 
     private mobileTouchSeekingHandler = (): void => {
@@ -219,9 +204,7 @@ export default class SeekSlider extends Component<VideoSeekSliderProps, VideoSee
 
     private setMobileSeeking = (state: boolean): void => {
         this.mobileSeeking = state;
-        this.setState({
-            seekHoverPosition: !state ? 0 : this.state.seekHoverPosition,
-        });
+        this.setState({ seekHoverPosition: !state ? 0 : this.state.seekHoverPosition });
     };
 
     private isThumbActive(): boolean {
@@ -230,61 +213,30 @@ export default class SeekSlider extends Component<VideoSeekSliderProps, VideoSee
 
     private renderBufferProgress = (): React.ReactNode => {
         if (this.props.bufferProgress) {
-            if (this.props.bufferColor) {
-                return (
-                    <div
-                        className="buffered"
-                        style={{
-                            ...this.getPositionStyle(this.props.bufferProgress),
-                            backgroundColor: this.props.bufferColor,
-                        }}
-                    />
-                );
-            } else {
-                return (
-                    <div
-                        className="buffered"
-                        style={this.getPositionStyle(this.props.bufferProgress)}
-                    />
-                );
-            }
+            const style = {
+                ...this.getPositionStyle(this.props.bufferProgress),
+                ...(this.props.bufferColor && { backgroundColor: this.props.bufferColor }),
+            };
+            return <div className="buffered" style={style} />;
         } else {
             return null;
         }
     };
 
     private renderProgress = () => {
-        if (this.props.sliderColor) {
-            return (
-                <div
-                    className="connect"
-                    style={{
-                        ...this.getPositionStyle(this.props.currentTime),
-                        backgroundColor: this.props.sliderColor,
-                    }}
-                />
-            );
-        } else {
-            return (
-                <div className="connect" style={this.getPositionStyle(this.props.currentTime)} />
-            );
-        }
+        const style = {
+            ...this.getPositionStyle(this.props.current),
+            ...(this.props.sliderColor && { backgroundColor: this.props.sliderColor }),
+        };
+        return <div className="connect" style={style} />;
     };
 
     private renderHoverProgress = () => {
-        if (this.props.sliderHoverColor) {
-            return (
-                <div
-                    className="seek-hover"
-                    style={{
-                        ...this.getSeekHoverPosition(),
-                        backgroundColor: this.props.sliderHoverColor,
-                    }}
-                />
-            );
-        } else {
-            return <div className="seek-hover" style={this.getSeekHoverPosition()} />;
-        }
+        const style = {
+            ...this.getSeekHoverPosition(),
+            ...(this.props.sliderHoverColor && { backgroundColor: this.props.sliderHoverColor }),
+        };
+        return <div className="seek-hover" style={style} />;
     };
 
     private renderThumb = (): React.ReactNode => {

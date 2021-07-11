@@ -73,13 +73,14 @@
     transform: translateX(100px);
 }
 .ui-video-seek-slider .thumb .handler {
-    transition: transform 0.2s;
     border-radius: 100%;
     width: 100%;
     height: 100%;
     background-color: white;
     opacity: 0;
     transform: scale(0.4);
+    cursor: pointer;
+    transition: transform 0.2s;
 }
 .ui-video-seek-slider .thumb.active .handler {
     opacity: 1;

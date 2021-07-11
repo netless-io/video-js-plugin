@@ -9,7 +9,7 @@ import "./PlayerController.css";
 import SeekSlider from "./SeekSlider";
 
 export type PlayerControllerProps = {
-    fullTime: number; // ms
+    duration: number; // ms
     progressTime: number;
     play: () => void;
     pause: () => void;
@@ -18,7 +18,7 @@ export type PlayerControllerProps = {
     handleVolume: (data: number) => void;
     volume: number;
     bufferProgress: number;
-    isDisplay: boolean;
+    visible: boolean;
 };
 
 export type PlayerControllerStates = {
@@ -119,11 +119,11 @@ export default class PlayerController extends Component<
         }
     };
 
-    private onChange = debounce((time: number, offsetTime: number) => {
+    private onChange = debounce((time: number) => {
         this.props.seekTime(time);
     }, 50);
 
-    private onVolumeChange = (time: number, offsetTime: number) => {
+    private onVolumeChange = (time: number) => {
         this.setState({ seekVolume: time / 100 });
         this.changeVolume(time);
     };
@@ -141,21 +141,18 @@ export default class PlayerController extends Component<
     };
 
     public render(): React.ReactNode {
-        const { fullTime, progressTime } = this.props;
+        const { duration: fullTime, progressTime } = this.props;
         return (
-            <div
-                className="player-schedule"
-                style={{ display: this.props.isDisplay ? "block" : "none" }}
-            >
+            <div className="player-schedule" style={{ opacity: this.props.visible ? "1" : "0" }}>
                 <div className="player-mid-box">
                     <SeekSlider
-                        fullTime={fullTime}
-                        currentTime={this.getCurrentTime(progressTime)}
+                        total={fullTime}
+                        current={this.getCurrentTime(progressTime)}
                         onChange={this.onChange}
                         bufferProgress={this.props.bufferProgress}
                         bufferColor={"rgba(255,255,255,0.3)"}
-                        hideHoverTime={true}
-                        limitTimeTooltipBySides={true}
+                        hideHoverTime
+                        limitTimeTooltipBySides
                         play={this.props.play}
                         pause={this.props.pause}
                         paused={this.props.paused}
@@ -190,8 +187,8 @@ export default class PlayerController extends Component<
                                 </div>
                                 <div className="player-volume-slider">
                                     <SeekSlider
-                                        fullTime={100}
-                                        currentTime={100 * this.state.seekVolume}
+                                        total={100}
+                                        current={100 * this.state.seekVolume}
                                         onChange={this.onVolumeChange}
                                         hideHoverTime={true}
                                         limitTimeTooltipBySides={true}

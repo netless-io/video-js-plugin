@@ -8,6 +8,7 @@
     width: 100%;
     height: 64px;
     background-image: linear-gradient(0deg, #000, transparent);
+    transition: opacity 200ms;
 }
 
 .player-menu-box {

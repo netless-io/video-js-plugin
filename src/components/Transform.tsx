@@ -14,6 +14,7 @@ export function FlexTransform({ scale = 1, size, children }: PropsWithChildren<P
                 transform: `scale(${scale})`,
                 transformOrigin: "top left",
                 display: "flex",
+                overflow: "hidden",
             }}
         >
             {children}
