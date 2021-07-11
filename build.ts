@@ -15,6 +15,7 @@ const common: BuildOptions = {
     metafile: true,
 };
 
+// looks like global `performance` is only available since node16
 const startTime = performance.now();
 
 const cjs = esbuild.build({
@@ -40,6 +41,7 @@ const iife = esbuild.build({
     ...common,
     external: [],
     outfile: pkg.jsdelivr,
+    globalName: "WhiteWebSdkVideoJsPlugin",
     plugins: [
         // https://github.com/yanm1ng/esbuild-plugin-external-global/blob/master/src/index.ts
         {
