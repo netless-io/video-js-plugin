@@ -1,0 +1,13 @@
+{
+    "editor.tabSize": 4,
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.sortImports": true
+    },
+    "prettier.tabWidth": 4,
+    "prettier.endOfLine": "auto",
+    "prettier.arrowParens": "avoid",
+    "[html]": {
+        "editor.defaultFormatter": null
+    }
+}
