@@ -1,5 +1,6 @@
 {
     "include": ["src"],
+    "exclude": ["node_modules"],
     "compilerOptions": {
         "jsx": "react",
         "strict": true,
@@ -10,7 +11,6 @@
         "moduleResolution": "Node",
         "resolveJsonModule": true,
         "lib": ["DOM", "ESNext"],
-        "types": [],
         "downlevelIteration": true,
         "declaration": true,
         "emitDeclarationOnly": true,

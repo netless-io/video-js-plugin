@@ -8,6 +8,6 @@
     "prettier.endOfLine": "auto",
     "prettier.arrowParens": "avoid",
     "[html]": {
-        "editor.defaultFormatter": null
+        "editor.defaultFormatter": "vscode.html-language-features"
     }
 }
