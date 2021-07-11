@@ -16,6 +16,7 @@ const common: BuildOptions = {
     metafile: true,
     loader: { ".svg": "dataurl" },
     plugins: [style()],
+    target: "es2018",
 };
 
 // looks like global `performance` is only available since node16
