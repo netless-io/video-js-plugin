@@ -3,7 +3,7 @@ import videojs, { VideoJsPlayer } from "video.js";
 import { autorun, CNode, Player, PlayerConsumer, Room, RoomConsumer } from "white-web-sdk";
 import { options } from "../options";
 import { Props } from "../types";
-import { getCurrentTime, nextFrame } from "../utils";
+import { checkWhiteWebSdkVersion, getCurrentTime, nextFrame } from "../utils";
 import PlayerController from "./PlayerController";
 import "./style.css";
 import { FlexTransform } from "./Transform";
@@ -49,6 +49,8 @@ class Impl extends Component<PropsWithDisplayer, State> {
             updater: false,
             controllerVisible: false,
         };
+
+        props.room && checkWhiteWebSdkVersion(props.room);
 
         (window as any).plugin = this.props.plugin;
     }
