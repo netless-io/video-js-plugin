@@ -93,7 +93,7 @@ class Impl extends Component<PropsWithDisplayer, State> {
                 />
                 {!this.props.plugin.context?.hideMuteAlert && this.state.NoSound && (
                     <div ref={this.setupAlert} className="videojs-plugin-muted-alert"></div>
-                )}
+                    )}
             </div>
         );
     }
@@ -205,6 +205,8 @@ class Impl extends Component<PropsWithDisplayer, State> {
 
         const video = document.createElement("video");
         video.className = "video-js";
+        video.setAttribute("playsInline", "true");
+        video.setAttribute("webkit-playsinline", "true");
         poster && (video.poster = poster);
 
         const source = document.createElement("source");
