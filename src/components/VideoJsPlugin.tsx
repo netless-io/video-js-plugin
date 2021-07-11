@@ -198,9 +198,10 @@ class Impl extends Component<PropsWithDisplayer, State> {
 
     catchPlayFail = (err: Error) => {
         if (String(err).includes("interact")) {
-            this.debug("catch play() fail", err);
             this.player.autoplay("any");
             this.setState({ NoSound: true });
+        } else {
+            this.debug("catch error", err);
         }
     };
 
@@ -260,6 +261,8 @@ class Impl extends Component<PropsWithDisplayer, State> {
             });
             player.on("ended", this.resetPlayer);
         });
+
+        player.on("error", this.catchPlayFail);
     }
 
     setupClose = (element: HTMLSpanElement | null) => {
