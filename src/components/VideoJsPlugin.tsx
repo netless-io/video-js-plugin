@@ -97,6 +97,12 @@ class Impl extends Component<PropsWithDisplayer, State> {
         );
     }
 
+    debug(msg: string, ...args: any[]) {
+        if (this.props.plugin.context?.verbose) {
+            console.log(`[VideoJS Plugin] ${msg}`, ...args);
+        }
+    }
+
     showController = () => {
         this.setState({ controllerVisible: true });
         this.setControllerHide();
@@ -162,7 +168,9 @@ class Impl extends Component<PropsWithDisplayer, State> {
         }
 
         const currentTime = getCurrentTime(s, this.props);
-        if (Math.abs(player.currentTime() - currentTime) > options.currentTimeMaxError) {
+        if (currentTime > player.duration()) {
+            this.resetPlayer();
+        } else if (Math.abs(player.currentTime() - currentTime) > options.currentTimeMaxError) {
             player.currentTime(currentTime);
         }
     };
@@ -180,12 +188,14 @@ class Impl extends Component<PropsWithDisplayer, State> {
 
     catchPlayFail = (err: Error) => {
         if (String(err).includes("interact")) {
+            this.debug("catch play() fail", err);
             this.player.autoplay("any");
             this.setState({ NoSound: true });
         }
     };
 
     fixPlayFail = () => {
+        this.debug("try to fix play state");
         this.setState({ NoSound: false });
         const { muted, volume } = this.props.plugin.attributes;
         if (this.player) {
@@ -197,6 +207,7 @@ class Impl extends Component<PropsWithDisplayer, State> {
     async initPlayer() {
         this.player?.dispose();
 
+        this.debug("creating elements ...");
         const { src, poster } = this.props.plugin.attributes;
 
         const wrapper = document.createElement("div");
@@ -224,6 +235,7 @@ class Impl extends Component<PropsWithDisplayer, State> {
         // NOTE: don't remove this line!
         await nextFrame();
 
+        this.debug("initializing videojs() ...");
         const player = videojs(video);
         this.player = player;
 
