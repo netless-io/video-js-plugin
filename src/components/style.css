@@ -53,3 +53,31 @@
     align-items: center;
     justify-content: center;
 }
+.videojs-plugin-muted-alert {
+    pointer-events: auto;
+    cursor: pointer;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 43;
+}
+.videojs-plugin-muted-alert::before {
+    pointer-events: auto;
+    cursor: pointer;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 43;
+    content: "\f104";
+    background: rgba(0, 0, 0, 0.3);
+    font-family: VideoJS;
+    font-size: 2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
