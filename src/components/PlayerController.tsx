@@ -23,29 +23,28 @@ export type PlayerControllerProps = {
 
 export type PlayerControllerStates = {
     isPlayerSeeking: boolean;
-    currentTime: number;
     isVolumeHover: boolean;
     seekVolume: number;
-    isDisplay: boolean;
+    visible: boolean;
+    currentTime: number;
 };
 
 export default class PlayerController extends Component<
     PlayerControllerProps,
     PlayerControllerStates
 > {
-    private progressTime: number = 0;
-    private stageVolume: number = 0;
+    private stageVolume = 0;
     private updateVolumeTimer = 0;
-    private onVolumeSeeking: boolean = false;
+    private onVolumeSeeking = false;
 
     public constructor(props: PlayerControllerProps) {
         super(props);
         this.state = {
             isPlayerSeeking: false,
-            currentTime: 0,
             isVolumeHover: false,
             seekVolume: 1,
-            isDisplay: true,
+            visible: true,
+            currentTime: 0,
         };
         this.stageVolume = props.volume;
     }
@@ -54,6 +53,9 @@ export default class PlayerController extends Component<
         this.updateVolumeTimer = setInterval(() => {
             if (!this.onVolumeSeeking) {
                 this.setState({ seekVolume: this.props.volume });
+            }
+            if (!this.state.isPlayerSeeking) {
+                this.setState({ currentTime: this.props.progressTime });
             }
         }, 100);
     }
@@ -70,20 +72,6 @@ export default class PlayerController extends Component<
             this.props.play();
         } else {
             this.props.pause();
-        }
-    };
-
-    private getCurrentTime = (progressTime: number): number => {
-        if (this.state.isPlayerSeeking) {
-            this.progressTime = progressTime;
-            return this.state.currentTime;
-        } else {
-            const isChange = this.progressTime !== progressTime;
-            if (isChange) {
-                return progressTime;
-            } else {
-                return this.state.currentTime;
-            }
         }
     };
 
@@ -119,7 +107,12 @@ export default class PlayerController extends Component<
         }
     };
 
-    private onChange = debounce((time: number) => {
+    private onChange = (currentTime: number) => {
+        this.setState({ currentTime });
+        currentTime && this.changeTime(currentTime);
+    };
+
+    private changeTime = debounce((time: number) => {
         this.props.seekTime(time);
     }, 50);
 
@@ -141,18 +134,24 @@ export default class PlayerController extends Component<
     };
 
     public render(): React.ReactNode {
-        const { duration: fullTime, progressTime } = this.props;
+        const { duration, progressTime } = this.props;
         return (
             <div className="player-schedule" style={{ opacity: this.props.visible ? "1" : "0" }}>
                 <div className="player-mid-box">
                     <SeekSlider
-                        total={fullTime}
-                        current={this.getCurrentTime(progressTime)}
+                        total={duration}
+                        current={this.state.currentTime}
                         onChange={this.onChange}
                         bufferProgress={this.props.bufferProgress}
                         bufferColor={"rgba(255,255,255,0.3)"}
                         hideHoverTime
                         limitTimeTooltipBySides
+                        onSeekStart={() => {
+                            this.setState({ isPlayerSeeking: true });
+                        }}
+                        onSeekEnd={() => {
+                            this.setState({ isPlayerSeeking: false });
+                        }}
                         play={this.props.play}
                         pause={this.props.pause}
                         paused={this.props.paused}
@@ -201,7 +200,7 @@ export default class PlayerController extends Component<
                         <div>
                             <div className="player-mid-box-time">
                                 {displayWatch(Math.floor(progressTime / 1000))} /{" "}
-                                {displayWatch(Math.floor(fullTime / 1000))}
+                                {displayWatch(Math.floor(duration / 1000))}
                             </div>
                         </div>
                     </div>

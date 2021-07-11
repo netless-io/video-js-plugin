@@ -35,6 +35,8 @@ interface State {
 export type PropsWithDisplayer = Props & { room?: Room; player?: Player };
 
 class Impl extends Component<PropsWithDisplayer, State> {
+    closeIcon: HTMLSpanElement | null = null;
+    alertMask: HTMLDivElement | null = null;
     container = React.createRef<HTMLDivElement>();
     player!: VideoJsPlayer;
     controllerHiddenTimer = 0;
@@ -58,17 +60,19 @@ class Impl extends Component<PropsWithDisplayer, State> {
         return (
             <div
                 className="video-js-plugin-container"
-                onMouseEnter={() => {
-                    this.setState({ controllerVisible: true });
-                    this.setControllerHide();
-                }}
-                onMouseMove={() => {
-                    this.setState({ controllerVisible: true });
-                    this.setControllerHide();
-                }}
+                onMouseEnter={this.showController}
+                onMouseMove={this.showController}
             >
                 <div className="video-js-plugin-player" ref={this.container}></div>
-                <div className="videojs-plugin-close-icon">&times;</div>
+                <div
+                    className="video-js-plugin-header"
+                    style={{ opacity: this.state.controllerVisible ? "1" : "0" }}
+                >
+                    <div className="video-js-plugin-title">HAHAHA</div>
+                    <div className="videojs-plugin-close-icon" ref={this.setupClose}>
+                        &times;
+                    </div>
+                </div>
                 <PlayerController
                     pause={this.pause}
                     volume={s.volume}
@@ -81,9 +85,17 @@ class Impl extends Component<PropsWithDisplayer, State> {
                     progressTime={s.currentTime * 1000}
                     visible={this.state.controllerVisible}
                 />
+                {!this.props.plugin.context?.hideMuteAlert && this.state.NoSound && (
+                    <div ref={this.setupAlert} className="videojs-plugin-muted-alert"></div>
+                )}
             </div>
         );
     }
+
+    showController = () => {
+        this.setState({ controllerVisible: true });
+        this.setControllerHide();
+    };
 
     play = () => {
         this.props.plugin.putAttributes({ paused: false });
@@ -116,7 +128,6 @@ class Impl extends Component<PropsWithDisplayer, State> {
     syncPlayerWithAttributes = () => {
         void this.props.plugin.context;
         const s = this.props.plugin.attributes;
-        console.log(JSON.stringify(s));
 
         const player = this.player;
         if (!player) return;
@@ -125,16 +136,17 @@ class Impl extends Component<PropsWithDisplayer, State> {
             if (s.paused) {
                 player.pause();
             } else {
-                player.play();
+                player.play()?.catch(this.catchPlayFail);
             }
         }
 
-        if (player.muted() !== s.muted) {
-            player.muted(s.muted);
-        }
-
-        if (player.volume() !== s.volume) {
-            player.volume(s.volume);
+        if (!this.state.NoSound) {
+            if (player.muted() !== s.muted) {
+                player.muted(s.muted);
+            }
+            if (player.volume() !== s.volume) {
+                player.volume(s.volume);
+            }
         }
 
         const currentTime = getCurrentTime(s, this.props);
@@ -152,6 +164,22 @@ class Impl extends Component<PropsWithDisplayer, State> {
             this.setState({ controllerVisible: false });
             this.controllerHiddenTimer = 0;
         }, 3000);
+    };
+
+    catchPlayFail = (err: Error) => {
+        if (!String(err).includes("pause()")) {
+            this.player.autoplay("any");
+            this.setState({ NoSound: true });
+        }
+    };
+
+    fixPlayFail = () => {
+        this.setState({ NoSound: false });
+        const { muted, volume } = this.props.plugin.attributes;
+        if (this.player) {
+            this.player.muted(muted);
+            this.player.volume(volume);
+        }
     };
 
     async initPlayer() {
@@ -196,5 +224,43 @@ class Impl extends Component<PropsWithDisplayer, State> {
         });
 
         (window as any).player = player;
+    }
+
+    setupClose = (element: HTMLSpanElement | null) => {
+        if (element) {
+            element.addEventListener("touchstart", this.removeSelf);
+            element.addEventListener("click", this.removeSelf);
+        }
+        this.closeIcon = element;
+    };
+
+    setupAlert = (element: HTMLDivElement | null) => {
+        if (element) {
+            element.addEventListener("touchstart", this.fixPlayFail);
+            element.addEventListener("click", this.fixPlayFail);
+        }
+        this.alertMask = element;
+    };
+
+    removeSelf = () => this.props.plugin.remove();
+
+    isEnabled() {
+        if (!this.props.room?.isWritable) return false;
+
+        let { identity, disabled } = this.props.plugin.context || {};
+        if (identity === undefined && disabled === undefined) {
+            // if not set, default to false
+            return false;
+        }
+        if (identity) {
+            // @deprecated respect identity
+            return ["host", "publisher"].includes(identity);
+        }
+        if (disabled === undefined) {
+            // if not set, default to false
+            return false;
+        }
+        // not disabled
+        return !disabled;
     }
 }
