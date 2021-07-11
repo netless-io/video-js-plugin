@@ -13,6 +13,7 @@ const common: BuildOptions = {
     bundle: true,
     sourcemap: true,
     metafile: true,
+    loader: { ".svg": "dataurl" },
 };
 
 // looks like global `performance` is only available since node16

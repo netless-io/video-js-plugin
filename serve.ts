@@ -23,6 +23,7 @@ const a = await esbuild.serve(
         bundle: true,
         sourcemap: true,
         metafile: true,
+        loader: { ".svg": "dataurl" },
         plugins: [
             // https://github.com/yanm1ng/esbuild-plugin-external-global/blob/master/src/index.ts
             {
