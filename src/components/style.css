@@ -6,6 +6,9 @@
 .video-js-plugin-container * {
     pointer-events: auto;
 }
+.video-js-plugin-container.disabled * {
+    pointer-events: none;
+}
 .videojs-plugin-close-icon,
 .player-schedule,
 .videojs-plugin-muted-alert {
