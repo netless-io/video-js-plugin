@@ -98,9 +98,9 @@ export default class SeekSlider extends Component<VideoSeekSliderProps, VideoSee
     private changeCurrentTimePosition(pageX: number): void {
         if (this.track) {
             let position: number = pageX - this.track.getBoundingClientRect().left;
-            position = Math.min(this.track.offsetWidth, Math.max(0, position));
+            position = Math.min(this.state.trackWidth, Math.max(0, position));
             this.setState({ seekHoverPosition: position });
-            const percent: number = position / this.track.offsetWidth;
+            const percent: number = position / this.state.trackWidth;
             const time: number = +(percent * this.props.total).toFixed(0);
             this.props.onChange(time);
         }
@@ -114,34 +114,24 @@ export default class SeekSlider extends Component<VideoSeekSliderProps, VideoSee
 
     private handleTrackHover = (clear: boolean, evt: React.MouseEvent): void => {
         if (this.track) {
-            let position: number = evt.pageX - this.track.getBoundingClientRect().left;
-            if (clear) {
-                position = 0;
-            }
+            const position = clear ? 0 : evt.pageX - this.track.getBoundingClientRect().left;
             this.setState({ seekHoverPosition: position });
         }
     };
 
     private getPositionStyle(time: number): TransformType {
         const position: number = (time * 100) / this.props.total;
-
-        return {
-            transform: `scaleX(${position / 100})`,
-        };
+        return { transform: `scaleX(${position / 100})` };
     }
 
     private getThumbHandlerPosition(): TransformType {
         const position: number = this.state.trackWidth / (this.props.total / this.props.current);
-        return {
-            transform: `translateX(${position}px)`,
-        };
+        return { transform: `translateX(${position}px)` };
     }
 
     private getSeekHoverPosition(): TransformType {
         const position: number = (this.state.seekHoverPosition * 100) / this.state.trackWidth;
-        return {
-            transform: `scaleX(${position / 100})`,
-        };
+        return { transform: `scaleX(${position / 100})` };
     }
 
     private getHoverTimePosition(): TransformType {
@@ -164,9 +154,9 @@ export default class SeekSlider extends Component<VideoSeekSliderProps, VideoSee
     private secondsToTime(seconds: number): Time {
         seconds = Math.round(seconds + this.offset);
         const hours: number = Math.floor(seconds / 3600);
-        const divirsForMinutes: number = seconds % 3600;
-        const minutes: number = Math.floor(divirsForMinutes / 60);
-        const sec: number = Math.ceil(divirsForMinutes % 60);
+        const divForMinutes: number = seconds % 3600;
+        const minutes: number = Math.floor(divForMinutes / 60);
+        const sec: number = Math.ceil(divForMinutes % 60);
         return {
             hh: hours.toString(),
             mm: minutes < 10 ? "0" + minutes : minutes.toString(),
@@ -241,25 +231,14 @@ export default class SeekSlider extends Component<VideoSeekSliderProps, VideoSee
     };
 
     private renderThumb = (): React.ReactNode => {
-        if (this.props.thumbColor) {
-            return (
-                <div
-                    className={this.isThumbActive() ? `thumb active` : "thumb"}
-                    style={{ ...this.getThumbHandlerPosition() }}
-                >
-                    <div style={{ backgroundColor: this.props.thumbColor }} className="handler" />
-                </div>
-            );
-        } else {
-            return (
-                <div
-                    className={this.isThumbActive() ? `thumb active` : "thumb"}
-                    style={{ ...this.getThumbHandlerPosition() }}
-                >
-                    <div className="handler" />
-                </div>
-            );
-        }
+        return (
+            <div
+                className={this.isThumbActive() ? `thumb active` : "thumb"}
+                style={this.getThumbHandlerPosition()}
+            >
+                <div style={{ backgroundColor: this.props.thumbColor }} className="handler" />
+            </div>
+        );
     };
 
     private drawHoverTime(): React.ReactNode {
@@ -284,9 +263,7 @@ export default class SeekSlider extends Component<VideoSeekSliderProps, VideoSee
             this.seekPause = true;
         }
         this.setSeeking(true, event);
-        if (this.props.onSeekStart) {
-            this.props.onSeekStart();
-        }
+        this.props.onSeekStart?.();
     };
 
     private onMouseUp = () => {
@@ -294,9 +271,7 @@ export default class SeekSlider extends Component<VideoSeekSliderProps, VideoSee
             this.props.play();
             this.seekPause = false;
         }
-        if (this.props.onSeekEnd) {
-            this.props.onSeekEnd();
-        }
+        this.props.onSeekEnd?.();
     };
 
     public render(): React.ReactNode {

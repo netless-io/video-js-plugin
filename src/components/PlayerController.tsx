@@ -85,7 +85,7 @@ export default class PlayerController extends Component<
     };
 
     private operationVolumeButton = (): React.ReactNode => {
-        if (this.props.volume === 1) {
+        if (this.props.volume > 0.9) {
             return <img src={volume2} />;
         } else if (this.props.volume === 0) {
             return <img src={volume0} />;
@@ -171,14 +171,10 @@ export default class PlayerController extends Component<
                             <div
                                 className="player-volume-box"
                                 onMouseEnter={() => {
-                                    this.setState({
-                                        isVolumeHover: true,
-                                    });
+                                    this.setState({ isVolumeHover: true });
                                 }}
                                 onMouseLeave={() => {
-                                    this.setState({
-                                        isVolumeHover: false,
-                                    });
+                                    this.setState({ isVolumeHover: false });
                                 }}
                             >
                                 <div onClick={this.handleClickVolume} className="player-volume">
@@ -218,11 +214,11 @@ function displayWatch(seconds: number): string {
         const displayMinutes = minutes % 60;
         const hours = (minutes - displayMinutes) / 60;
 
-        return `${updateNumber(hours)} : ${updateNumber(displayMinutes)} : ${updateNumber(
+        return `${updateNumber(hours)}:${updateNumber(displayMinutes)}:${updateNumber(
             displaySeconds
         )}`;
     } else {
-        return `${updateNumber(minutes)} : ${updateNumber(displaySeconds)}`;
+        return `${updateNumber(minutes)}:${updateNumber(displaySeconds)}`;
     }
 }
 

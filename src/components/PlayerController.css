@@ -70,6 +70,7 @@
     color: white;
     flex-shrink: 0;
     margin-right: 8px;
+    font-family: monospace;
 }
 
 .player-controller {

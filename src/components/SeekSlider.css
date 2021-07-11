@@ -81,6 +81,7 @@
     transform: scale(0.4);
     cursor: pointer;
     transition: transform 0.2s;
+    pointer-events: none;
 }
 .ui-video-seek-slider .thumb.active .handler {
     opacity: 1;

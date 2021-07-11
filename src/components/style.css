@@ -6,7 +6,13 @@
 .video-js-plugin-container * {
     pointer-events: auto;
 }
-.video-js-plugin-container.disabled * {
+.videojs-plugin-close-icon,
+.player-schedule,
+.videojs-plugin-muted-alert {
+    pointer-events: auto;
+}
+.video-js-plugin-container.disabled .videojs-plugin-close-icon,
+.video-js-plugin-container.disabled .player-schedule {
     pointer-events: none;
 }
 .video-js-plugin-header {
@@ -18,6 +24,7 @@
     display: flex;
     background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.45) 40%, rgba(0, 0, 0, 0));
     transition: opacity 200ms;
+    user-select: none;
 }
 .video-js-plugin-title {
     padding: 10px;

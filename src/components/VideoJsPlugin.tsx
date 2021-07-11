@@ -59,7 +59,11 @@ class Impl extends Component<PropsWithDisplayer, State> {
         const bufferedPercent = this.player?.bufferedPercent() || 0;
         return (
             <div
-                className="video-js-plugin-container"
+                className={
+                    this.isEnabled()
+                        ? "video-js-plugin-container"
+                        : "video-js-plugin-container disabled"
+                }
                 onMouseEnter={this.showController}
                 onMouseMove={this.showController}
             >
@@ -82,7 +86,7 @@ class Impl extends Component<PropsWithDisplayer, State> {
                     duration={duration}
                     seekTime={this.seekTime}
                     bufferProgress={duration * bufferedPercent}
-                    progressTime={s.currentTime * 1000}
+                    progressTime={getCurrentTime(s, this.props) * 1000}
                     visible={this.state.controllerVisible}
                 />
                 {!this.props.plugin.context?.hideMuteAlert && this.state.NoSound && (
@@ -140,13 +144,13 @@ class Impl extends Component<PropsWithDisplayer, State> {
             }
         }
 
-        if (!this.state.NoSound) {
-            if (player.muted() !== s.muted) {
-                player.muted(s.muted);
-            }
-            if (player.volume() !== s.volume) {
-                player.volume(s.volume);
-            }
+        // NOTE: 2 actions below will cause error message in console (ignore them)
+        if (player.muted() !== s.muted) {
+            player.muted(s.muted);
+        }
+
+        if (player.volume() !== s.volume) {
+            player.volume(s.volume);
         }
 
         const currentTime = getCurrentTime(s, this.props);
@@ -167,7 +171,7 @@ class Impl extends Component<PropsWithDisplayer, State> {
     };
 
     catchPlayFail = (err: Error) => {
-        if (!String(err).includes("pause()")) {
+        if (String(err).includes("interact")) {
             this.player.autoplay("any");
             this.setState({ NoSound: true });
         }
