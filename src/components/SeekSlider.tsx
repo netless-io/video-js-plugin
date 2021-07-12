@@ -284,7 +284,7 @@ export default class SeekSlider extends Component<VideoSeekSliderProps, VideoSee
 
     public render(): React.ReactNode {
         return (
-            <div className="ui-video-seek-slider">
+            <div className="seek-slider">
                 <div
                     className="track"
                     ref={ref => (this.track = ref)}

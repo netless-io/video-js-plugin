@@ -1,20 +1,20 @@
-.ui-video-seek-slider {
+.vjs-p .seek-slider {
     position: relative;
     width: 100%;
 }
-.ui-video-seek-slider:focus {
+.vjs-p .seek-slider:focus {
     outline: none;
 }
-.ui-video-seek-slider .track {
+.vjs-p .seek-slider .track {
     padding: 10px 0;
     cursor: pointer;
     outline: none;
 }
-.ui-video-seek-slider .track:focus {
+.vjs-p .seek-slider .track:focus {
     border: 0;
     outline: none;
 }
-.ui-video-seek-slider .track .main {
+.vjs-p .seek-slider .track .main {
     width: 100%;
     height: 3px;
     background-color: rgba(255, 255, 255, 0.3);
@@ -25,11 +25,11 @@
     transition: transform 0.4s;
     outline: none;
 }
-.ui-video-seek-slider .track .main:focus {
+.vjs-p .seek-slider .track .main:focus {
     border: 0;
     outline: none;
 }
-.ui-video-seek-slider .track .main .buffered {
+.vjs-p .seek-slider .track .main .buffered {
     position: absolute;
     background-color: rgba(255, 255, 255, 0.3);
     width: 100%;
@@ -38,7 +38,7 @@
     z-index: 2;
     transform-origin: 0 0;
 }
-.ui-video-seek-slider .track .main .seek-hover {
+.vjs-p .seek-slider .track .main .seek-hover {
     position: absolute;
     background-color: rgba(255, 255, 255, 0.5);
     width: 100%;
@@ -49,7 +49,7 @@
     opacity: 0;
     transition: opacity 0.4s;
 }
-.ui-video-seek-slider .track .main .connect {
+.vjs-p .seek-slider .track .main .connect {
     position: absolute;
     background-color: white;
     width: 100%;
@@ -59,10 +59,10 @@
     transform: scaleX(0.13);
     transform-origin: 0 0;
 }
-.ui-video-seek-slider .track.active .main {
+.vjs-p .seek-slider .track.active .main {
     transform: scaleY(2);
 }
-.ui-video-seek-slider .thumb {
+.vjs-p .seek-slider .thumb {
     pointer-events: none;
     position: absolute;
     width: 12px;
@@ -72,7 +72,7 @@
     z-index: 4;
     transform: translateX(100px);
 }
-.ui-video-seek-slider .thumb .handler {
+.vjs-p .seek-slider .thumb .handler {
     border-radius: 100%;
     width: 100%;
     height: 100%;
@@ -83,11 +83,11 @@
     transition: transform 0.2s;
     pointer-events: none;
 }
-.ui-video-seek-slider .thumb.active .handler {
+.vjs-p .seek-slider .thumb.active .handler {
     opacity: 1;
     transform: scale(1);
 }
-.ui-video-seek-slider .hover-time {
+.vjs-p .seek-slider .hover-time {
     position: absolute;
     background-color: rgba(0, 0, 0, 0.3);
     line-height: 18px;
@@ -102,9 +102,9 @@
     transform: translateX(150px);
     pointer-events: none;
 }
-.ui-video-seek-slider .hover-time.active {
+.vjs-p .seek-slider .hover-time.active {
     opacity: 1;
 }
-.ui-video-seek-slider:hover .track .main .seek-hover {
+.vjs-p .seek-slider:hover .track .main .seek-hover {
     opacity: 1;
 }

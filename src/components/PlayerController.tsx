@@ -118,8 +118,8 @@ export default class PlayerController extends Component<
     }, 50);
 
     private onVolumeChange = (time: number) => {
-        this.setState({ seekVolume: time / 100 });
         this.changeVolume(time);
+        this.setState({ seekVolume: time / 100 });
     };
 
     private changeVolume = debounce((time: number) => {
@@ -130,15 +130,21 @@ export default class PlayerController extends Component<
         this.onVolumeSeeking = true;
     };
 
-    private onVolumeSeekEnd = () => {
+    private onVolumeSeekEnd = debounce(() => {
         this.onVolumeSeeking = false;
-    };
+    }, 500);
+
+    private onProgressSeekStart = () => this.setState({ isPlayerSeeking: true });
+
+    private onProgressSeekEnd = debounce(() => {
+        this.setState({ isPlayerSeeking: false });
+    }, 500);
 
     public render(): React.ReactNode {
         const { duration, progressTime } = this.props;
         return (
-            <div className="player-schedule" style={{ opacity: this.props.visible ? "1" : "0" }}>
-                <div className="player-mid-box">
+            <div className="player-controller" style={{ opacity: this.props.visible ? "1" : "0" }}>
+                <div className="player-controller-progress">
                     <SeekSlider
                         total={duration}
                         current={this.state.currentTime}
@@ -147,61 +153,47 @@ export default class PlayerController extends Component<
                         bufferColor={"rgba(255,255,255,0.3)"}
                         hideHoverTime
                         limitTimeTooltipBySides
-                        onSeekStart={() => {
-                            this.setState({ isPlayerSeeking: true });
-                        }}
-                        onSeekEnd={() => {
-                            this.setState({ isPlayerSeeking: false });
-                        }}
+                        onSeekStart={this.onProgressSeekStart}
+                        onSeekEnd={this.onProgressSeekEnd}
                         play={this.props.play}
                         pause={this.props.pause}
                         paused={this.props.paused}
                         scale={this.props.scale}
                     />
                 </div>
-                <div className="player-controller-box">
-                    <div className="player-controller-mid">
-                        <div className="player-left-box">
-                            <div
-                                onClick={() => {
-                                    this.onClickOperationButton();
-                                }}
-                                className="player-controller"
-                            >
-                                {this.operationButton()}
+                <div className="player-controller-actions">
+                    <div className="player-controller-actions-left">
+                        <div
+                            onClick={this.onClickOperationButton}
+                            className="player-controller-play"
+                        >
+                            {this.operationButton()}
+                        </div>
+                        <div
+                            className="player-volume-box"
+                            onMouseEnter={() => this.setState({ isVolumeHover: true })}
+                            onMouseLeave={() => this.setState({ isVolumeHover: false })}
+                        >
+                            <div onClick={this.handleClickVolume} className="player-volume">
+                                {this.operationVolumeButton()}
                             </div>
-                            <div
-                                className="player-volume-box"
-                                onMouseEnter={() => {
-                                    this.setState({ isVolumeHover: true });
-                                }}
-                                onMouseLeave={() => {
-                                    this.setState({ isVolumeHover: false });
-                                }}
-                            >
-                                <div onClick={this.handleClickVolume} className="player-volume">
-                                    {this.operationVolumeButton()}
-                                </div>
-                                <div className="player-volume-slider">
-                                    <SeekSlider
-                                        total={100}
-                                        current={100 * this.state.seekVolume}
-                                        onChange={this.onVolumeChange}
-                                        hideHoverTime={true}
-                                        limitTimeTooltipBySides={true}
-                                        onSeekStart={this.onVolumeSeekStart}
-                                        onSeekEnd={this.onVolumeSeekEnd}
-                                        scale={this.props.scale}
-                                    />
-                                </div>
+                            <div className="player-volume-slider">
+                                <SeekSlider
+                                    total={100}
+                                    current={100 * this.state.seekVolume}
+                                    onChange={this.onVolumeChange}
+                                    hideHoverTime={true}
+                                    limitTimeTooltipBySides={true}
+                                    onSeekStart={this.onVolumeSeekStart}
+                                    onSeekEnd={this.onVolumeSeekEnd}
+                                    scale={this.props.scale}
+                                />
                             </div>
                         </div>
-                        <div>
-                            <div className="player-mid-box-time">
-                                {displayWatch(Math.floor(progressTime / 1000))} /{" "}
-                                {displayWatch(Math.floor(duration / 1000))}
-                            </div>
-                        </div>
+                    </div>
+                    <div className="player-mid-box-time">
+                        {displayWatch(Math.floor(progressTime / 1000))} /{" "}
+                        {displayWatch(Math.floor(duration / 1000))}
                     </div>
                 </div>
             </div>

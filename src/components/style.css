@@ -1,24 +1,24 @@
-.video-js-plugin-container {
+.vjs-p {
     display: flex;
     flex-grow: 1;
     position: relative;
 }
-.video-js-plugin-container * {
+.vjs-p * {
     pointer-events: auto;
 }
-.video-js-plugin-container.disabled * {
+.vjs-p.disabled * {
     pointer-events: none;
 }
-.videojs-plugin-close-icon,
-.player-schedule,
-.videojs-plugin-muted-alert {
+.vjs-p .videojs-plugin-close-icon,
+.vjs-p .player-controller,
+.vjs-p .videojs-plugin-muted-alert {
     pointer-events: auto;
 }
-.video-js-plugin-container.disabled .videojs-plugin-close-icon,
-.video-js-plugin-container.disabled .player-schedule {
+.vjs-p.disabled .videojs-plugin-close-icon,
+.vjs-p.disabled .player-controller {
     pointer-events: none;
 }
-.video-js-plugin-header {
+.vjs-p .video-js-plugin-header {
     position: absolute;
     z-index: 100;
     top: 0;
@@ -29,12 +29,12 @@
     transition: opacity 200ms;
     user-select: none;
 }
-.video-js-plugin-title {
+.vjs-p .video-js-plugin-title {
     padding: 10px;
     font-size: 14px;
     color: white;
 }
-.video-js-plugin-player {
+.vjs-p .video-js-plugin-player {
     position: absolute;
     top: 0;
     left: 0;
@@ -46,10 +46,10 @@
     width: 100%;
     height: 100%;
 }
-.videojs-plugin-close-icon.disabled {
+.vjs-p .videojs-plugin-close-icon.disabled {
     display: none;
 }
-.videojs-plugin-close-icon {
+.vjs-p .videojs-plugin-close-icon {
     pointer-events: auto;
     z-index: 42;
     color: white;
@@ -63,7 +63,7 @@
     align-items: center;
     justify-content: center;
 }
-.videojs-plugin-muted-alert {
+.vjs-p .videojs-plugin-muted-alert {
     pointer-events: auto;
     cursor: pointer;
     position: absolute;
@@ -73,7 +73,7 @@
     bottom: 0;
     z-index: 43;
 }
-.videojs-plugin-muted-alert::before {
+.vjs-p .videojs-plugin-muted-alert::before {
     pointer-events: auto;
     cursor: pointer;
     position: absolute;
@@ -91,7 +91,7 @@
     justify-content: center;
     color: white;
 }
-.videojs-plugin-recovery-mode {
+.vjs-p .videojs-plugin-recovery-mode {
     pointer-events: auto;
     cursor: pointer;
     position: absolute;
@@ -101,7 +101,7 @@
     bottom: 0;
     z-index: 44;
 }
-.videojs-plugin-recovery-mode button {
+.vjs-p .videojs-plugin-recovery-mode button {
     position: absolute;
     top: 50%;
     left: 50%;

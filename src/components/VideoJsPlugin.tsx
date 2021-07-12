@@ -43,6 +43,7 @@ class Impl extends Component<PropsWithDisplayer, State> {
     controllerHiddenTimer = 0;
     syncPlayerTimer = 0;
     retryCount = 0;
+    disposer?: () => void;
 
     constructor(props: PropsWithDisplayer) {
         super(props);
@@ -66,11 +67,7 @@ class Impl extends Component<PropsWithDisplayer, State> {
         // const controllerVisible = this.state.isAudio || this.state.controllerVisible;
         return (
             <div
-                className={
-                    this.isEnabled()
-                        ? "video-js-plugin-container"
-                        : "video-js-plugin-container disabled"
-                }
+                className={this.isEnabled() ? "vjs-p" : "vjs-p disabled"}
                 onMouseEnter={this.showController}
                 onMouseMove={this.showController}
             >
@@ -148,11 +145,12 @@ class Impl extends Component<PropsWithDisplayer, State> {
 
     componentDidMount() {
         this.initPlayer();
-        autorun(this.syncPlayerWithAttributes);
+        this.disposer = autorun(this.syncPlayerWithAttributes);
         this.syncPlayerTimer = setInterval(this.syncPlayerWithAttributes, options.syncInterval);
     }
 
     componentWillUnmount() {
+        this.disposer?.();
         this.player?.dispose();
         clearInterval(this.syncPlayerTimer);
     }
@@ -268,15 +266,16 @@ class Impl extends Component<PropsWithDisplayer, State> {
         const player = videojs(video);
         this.player = player;
 
-        player.one("loadedmetadata", () => {
-            this.setState({ updater: !this.state.updater });
-        });
+        player.one("loadedmetadata", this.gracefullyUpdate);
 
         player.on("ready", () => {
             options.onPlayer?.(player);
-            player.on("timeupdate", () => {
-                this.setState({ updater: !this.state.updater });
-            });
+
+            player.on("timeupdate", this.gracefullyUpdate);
+            player.on("volumechange", this.gracefullyUpdate);
+            player.on("seeked", this.gracefullyUpdate);
+            player.on("play", this.gracefullyUpdate);
+            player.on("pause", this.gracefullyUpdate);
             player.on("ended", this.resetPlayer);
         });
 
@@ -284,6 +283,8 @@ class Impl extends Component<PropsWithDisplayer, State> {
 
         this.setState({ MediaError: false });
     };
+
+    gracefullyUpdate = () => this.setState({ updater: !this.state.updater });
 
     setupClose = (element: HTMLSpanElement | null) => {
         if (element) {

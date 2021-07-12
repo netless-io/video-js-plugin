@@ -1,17 +1,18 @@
-.player-schedule {
+.vjs-p .player-controller {
     position: absolute;
     z-index: 100;
     bottom: 0px;
+    left: 0;
+    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    width: 100%;
     height: 64px;
     background-image: linear-gradient(0deg, #000, transparent);
     transition: opacity 200ms;
 }
 
-.player-menu-box {
+.vjs-p .player-menu-box {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -19,50 +20,43 @@
     margin-bottom: 40px;
 }
 
-.player-menu-cell {
+.vjs-p .player-menu-cell {
     width: 100%;
     text-align: center;
     font-size: 12px;
     color: #7a7b7c;
 }
 
-.player-multiple-play {
+.vjs-p .player-multiple-play {
     width: 64px;
     height: 120px;
 }
 
-.player-left-box {
+.vjs-p .player-controller-actions-left {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-shrink: 0;
 }
 
-.player-right-box {
+.vjs-p .player-right-box {
     font-size: 14px;
     color: #7a7b7c;
     cursor: pointer;
     margin-right: 12px;
 }
 
-.player-controller-box {
+.vjs-p .player-controller-actions {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
     padding-left: 8px;
     padding-right: 8px;
     margin-top: 2px;
 }
 
-.player-controller-mid {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    width: 100%;
-    align-items: center;
-}
-
-.player-mid-box-time {
+.vjs-p .player-mid-box-time {
     font-size: 9px;
     display: flex;
     justify-content: center;
@@ -73,17 +67,15 @@
     font-family: monospace;
 }
 
-.player-controller {
+.vjs-p .player-controller-play {
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    width: 22px;
-    height: 22px;
-    border-right: 4px;
+    padding-right: 4px;
 }
 
-.player-mid-box {
+.vjs-p .player-controller-progress {
     width: calc(100% - 28px);
     margin-left: 14px;
     display: flex;
@@ -92,7 +84,7 @@
     margin-top: 8px;
 }
 
-.player-volume {
+.vjs-p .player-volume {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -101,12 +93,14 @@
     margin-left: 16px;
 }
 
-.player-volume-slider {
+.vjs-p .player-volume-slider {
     width: 60px;
     margin-right: 12px;
+    display: flex;
+    align-items: center;
 }
 
-.player-volume-box {
+.vjs-p .player-volume-box {
     display: flex;
     flex-direction: row;
 }
