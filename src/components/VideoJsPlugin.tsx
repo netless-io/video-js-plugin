@@ -59,8 +59,6 @@ class Impl extends Component<PropsWithDisplayer, State> {
     }
 
     render() {
-        const close = this.props.plugin.context?.close ?? true;
-
         const s = this.props.plugin.attributes;
         const duration = (this.player?.duration() || 1e3) * 1000;
         const bufferedPercent = this.player?.bufferedPercent() || 0;
@@ -75,7 +73,7 @@ class Impl extends Component<PropsWithDisplayer, State> {
                 <div className="video-js-plugin-player" ref={this.container}></div>
                 <div className="video-js-plugin-header">
                     {/* <div className="video-js-plugin-title">Sync Player</div> */}
-                    {close && (
+                    {(s.close ?? true) && (
                         <div className="videojs-plugin-close-icon" ref={this.setupClose}>
                             &times;
                         </div>

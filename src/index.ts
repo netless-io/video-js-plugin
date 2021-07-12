@@ -21,6 +21,7 @@ export const videoJsPlugin = (options?: VideoJsPluginOptions): Plugin => {
             paused: true,
             muted: false,
             volume: 1,
+            close: true,
         },
     };
 };

@@ -25,12 +25,6 @@ export interface PluginContext {
     enable?: boolean;
 
     /**
-     * If set false, the top-right [x] will not shown.
-     * @default true
-     */
-    close?: boolean;
-
-    /**
      * For debug.
      * @default false
      */
@@ -38,6 +32,11 @@ export interface PluginContext {
 }
 
 export interface VideoJsPluginAttributes {
+    /**
+     * 是否显示 X，默认显示
+     * @default true
+     */
+    close?: boolean;
     /** 视频文件地址，空字符串时不播放 */
     src: string;
     /** 封面 */
