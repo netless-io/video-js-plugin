@@ -18,6 +18,13 @@ export interface VideoJsPluginOptions {
     syncInterval: number;
 
     /**
+     * 恢复重试间隔（毫秒）
+     * 每隔这段时间恢复一次重试的机会
+     * @default 15000
+     */
+    retryInterval: number;
+
+    /**
      * 可以自定义播放器的接口，每次创建出一个播放器都会调一下这个函数
      */
     onPlayer?: (player: VideoJsPlayer) => void;
@@ -26,6 +33,7 @@ export interface VideoJsPluginOptions {
 export const defaultOptions: VideoJsPluginOptions = {
     currentTimeMaxError: 1,
     syncInterval: 500,
+    retryInterval: 15000,
 };
 
 export let options = defaultOptions;

@@ -43,6 +43,7 @@ class Impl extends Component<PropsWithDisplayer, State> {
     controllerHiddenTimer = 0;
     syncPlayerTimer = 0;
     retryCount = 0;
+    decreaseRetryTimer = 0;
     disposer?: () => void;
 
     constructor(props: PropsWithDisplayer) {
@@ -58,11 +59,9 @@ class Impl extends Component<PropsWithDisplayer, State> {
     }
 
     render() {
-        const { room, player } = this.props;
         const s = this.props.plugin.attributes;
         const duration = (this.player?.duration() || 1e3) * 1000;
         const bufferedPercent = this.player?.bufferedPercent() || 0;
-        const displayer = room || player;
 
         // const controllerVisible = this.state.isAudio || this.state.controllerVisible;
         return (
@@ -88,8 +87,8 @@ class Impl extends Component<PropsWithDisplayer, State> {
                     seekTime={this.seekTime}
                     bufferProgress={duration * bufferedPercent}
                     progressTime={getCurrentTime(s, this.props) * 1000}
+                    scale={this.props.scale}
                     visible
-                    scale={displayer?.state.cameraState.scale}
                 />
                 {!this.props.plugin.context?.hideMuteAlert && this.state.NoSound && (
                     <div ref={this.setupAlert} className="videojs-plugin-muted-alert"></div>
@@ -147,12 +146,14 @@ class Impl extends Component<PropsWithDisplayer, State> {
         this.initPlayer();
         this.disposer = autorun(this.syncPlayerWithAttributes);
         this.syncPlayerTimer = setInterval(this.syncPlayerWithAttributes, options.syncInterval);
+        this.decreaseRetryTimer = setInterval(this.decreaseRetryCount, options.retryInterval);
     }
 
     componentWillUnmount() {
         this.disposer?.();
         this.player?.dispose();
         clearInterval(this.syncPlayerTimer);
+        clearInterval(this.decreaseRetryTimer);
     }
 
     syncPlayerWithAttributes = () => {
@@ -200,6 +201,13 @@ class Impl extends Component<PropsWithDisplayer, State> {
             this.setState({ controllerVisible: false });
             this.controllerHiddenTimer = 0;
         }, 3000);
+    };
+
+    decreaseRetryCount = () => {
+        if (!this.player) return;
+        if (this.retryCount > 0) {
+            this.retryCount = this.retryCount - 1;
+        }
     };
 
     catchPlayFail = (err: Error) => {
