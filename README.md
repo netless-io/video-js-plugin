@@ -10,10 +10,22 @@ import { createPlugins } from "white-web-sdk";
 
 const plugins = createPlugins({ "video.js": videoJsPlugin() });
 
-plugins.setPluginContext("video.js", { enable: true, close: false, verbose: true });
+plugins.setPluginContext("video.js", { enable: true, verbose: true });
 
 const sdk = new WhiteWebSdk({ appIdentifier, plugins });
+
+const room = await sdk.joinRoom({ uuid, roomToken });
+
+room.insertPlugin("video.js", {
+    originX: -width / 2,
+    originY: -height / 2,
+    width,
+    height,
+    attributes: { src: "url/to/a.mp4" },
+});
 ```
+
+Options: see [types.ts](./src/types.ts).
 
 If you are using `<script>`, here is an example:
 
