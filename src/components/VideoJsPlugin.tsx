@@ -59,6 +59,8 @@ class Impl extends Component<PropsWithDisplayer, State> {
     }
 
     render() {
+        const close = this.props.plugin.context?.close ?? true;
+
         const s = this.props.plugin.attributes;
         const duration = (this.player?.duration() || 1e3) * 1000;
         const bufferedPercent = this.player?.bufferedPercent() || 0;
@@ -73,9 +75,11 @@ class Impl extends Component<PropsWithDisplayer, State> {
                 <div className="video-js-plugin-player" ref={this.container}></div>
                 <div className="video-js-plugin-header">
                     {/* <div className="video-js-plugin-title">Sync Player</div> */}
-                    <div className="videojs-plugin-close-icon" ref={this.setupClose}>
-                        &times;
-                    </div>
+                    {close && (
+                        <div className="videojs-plugin-close-icon" ref={this.setupClose}>
+                            &times;
+                        </div>
+                    )}
                 </div>
                 <PlayerController
                     pause={this.pause}
@@ -321,21 +325,18 @@ class Impl extends Component<PropsWithDisplayer, State> {
 
     isEnabled() {
         if (!this.props.room?.isWritable) return false;
+        const { identity, enable } = this.props.plugin.context || {};
 
-        let { identity, disabled } = this.props.plugin.context || {};
-        if (identity === undefined && disabled === undefined) {
+        if (identity === undefined && enable === undefined) {
             // if not set, default to false
             return false;
         }
+
         if (identity) {
             // @deprecated respect identity
             return ["host", "publisher"].includes(identity);
         }
-        if (disabled === undefined) {
-            // if not set, default to false
-            return false;
-        }
-        // not disabled
-        return !disabled;
+
+        return Boolean(enable);
     }
 }

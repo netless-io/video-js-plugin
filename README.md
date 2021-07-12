@@ -10,10 +10,7 @@ import { createPlugins } from "white-web-sdk";
 
 const plugins = createPlugins({ "video.js": videoJsPlugin() });
 
-plugins.setPluginContext("video.js", {
-    disabled: identity !== Identity.creator,
-    verbose: true,
-});
+plugins.setPluginContext("video.js", { enable: true, close: false, verbose: true });
 
 const sdk = new WhiteWebSdk({ appIdentifier, plugins });
 ```

@@ -29,7 +29,7 @@ const { createPlugins } = WhiteWebSdk;
 const { PluginId, Version, videoJsPlugin } = WhiteWebSdkVideoJsPlugin;
 
 const plugins = createPlugins({ [PluginId]: videoJsPlugin() });
-plugins.setPluginContext(PluginId, { disabled: false, verbose: true });
+plugins.setPluginContext(PluginId, { enable: true, verbose: true });
 
 log("plugins =", plugins);
 log(`%c[plugin:${PluginId}@${Version}]`, "font-size: 20px; color: orange; font-weight: bold");

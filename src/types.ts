@@ -8,21 +8,31 @@ export interface PluginContext {
     /**
      * Chrome prevents video play sound on video.play().
      * Set `hideMuteAlert: true` to hide the muted mask covering the player.
+     * @default false
      */
     hideMuteAlert?: boolean;
 
     /**
      * @deprecated use `disabled` or `room.setWritable()` instead.
+     * @default "guest"
      */
     identity?: "host" | "publisher" | "guest" | "observer";
 
     /**
-     * If set, videojs plugins will not be controlled by the user input.
+     * If set false, videojs plugins will not be controlled by the user input.
+     * @default false
      */
-    disabled?: boolean;
+    enable?: boolean;
+
+    /**
+     * If set false, the top-right [x] will not shown.
+     * @default true
+     */
+    close?: boolean;
 
     /**
      * For debug.
+     * @default false
      */
     verbose?: boolean;
 }
