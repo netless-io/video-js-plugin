@@ -149,7 +149,6 @@ class Impl extends Component<PropsWithDisplayer, State> {
         this.disposer = autorun(this.syncPlayerWithAttributes);
         this.syncPlayerTimer = setInterval(this.syncPlayerWithAttributes, options.syncInterval);
         this.decreaseRetryTimer = setInterval(this.decreaseRetryCount, options.retryInterval);
-        (window as any).plugin = this.props.plugin;
     }
 
     componentWillUnmount() {
