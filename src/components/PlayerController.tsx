@@ -8,27 +8,27 @@ import volume2 from "./icons/volume2.svg";
 import "./PlayerController.css";
 import SeekSlider from "./SeekSlider";
 
-export type PlayerControllerProps = {
-    duration: number; // ms
-    progressTime: number;
+export interface PlayerControllerProps {
+    duration: number;
+    currentTime: number;
+    setCurrentTime: (time: number) => void;
+    paused: boolean;
     play: () => void;
     pause: () => void;
-    paused: boolean;
-    seekTime: (time: number) => void;
-    handleVolume: (data: number) => void;
     volume: number;
-    bufferProgress: number;
+    setVolume: (volume: number) => void;
+    buffered: number;
     visible: boolean;
     scale?: number;
-};
+}
 
-export type PlayerControllerStates = {
+export interface PlayerControllerStates {
     isPlayerSeeking: boolean;
     isVolumeHover: boolean;
     seekVolume: number;
     visible: boolean;
     currentTime: number;
-};
+}
 
 export default class PlayerController extends Component<
     PlayerControllerProps,
@@ -56,7 +56,7 @@ export default class PlayerController extends Component<
                 this.setState({ seekVolume: this.props.volume });
             }
             if (!this.state.isPlayerSeeking) {
-                this.setState({ currentTime: this.props.progressTime });
+                this.setState({ currentTime: this.props.currentTime });
             }
         }, 100);
     }
@@ -98,13 +98,13 @@ export default class PlayerController extends Component<
     private handleClickVolume = (): void => {
         if (this.props.volume === 0) {
             if (this.stageVolume !== 0) {
-                this.props.handleVolume(this.stageVolume);
+                this.props.setVolume(this.stageVolume);
             } else {
-                this.props.handleVolume(1);
+                this.props.setVolume(1);
             }
         } else {
             this.stageVolume = this.props.volume;
-            this.props.handleVolume(0);
+            this.props.setVolume(0);
         }
     };
 
@@ -114,7 +114,7 @@ export default class PlayerController extends Component<
     };
 
     private changeTime = debounce((time: number) => {
-        this.props.seekTime(time);
+        this.props.setCurrentTime(time);
     }, 50);
 
     private onVolumeChange = (time: number) => {
@@ -123,7 +123,7 @@ export default class PlayerController extends Component<
     };
 
     private changeVolume = debounce((time: number) => {
-        this.props.handleVolume(time / 100);
+        this.props.setVolume(time / 100);
     }, 50);
 
     private onVolumeSeekStart = () => {
@@ -141,7 +141,7 @@ export default class PlayerController extends Component<
     }, 500);
 
     public render(): React.ReactNode {
-        const { duration, progressTime } = this.props;
+        const { duration, currentTime: progressTime } = this.props;
         return (
             <div className="player-controller" style={{ opacity: this.props.visible ? "1" : "0" }}>
                 <div className="player-controller-progress">
@@ -149,7 +149,7 @@ export default class PlayerController extends Component<
                         total={duration}
                         current={this.state.currentTime}
                         onChange={this.onChange}
-                        bufferProgress={this.props.bufferProgress}
+                        buffered={this.props.buffered}
                         bufferColor={"rgba(255,255,255,0.3)"}
                         hideHoverTime
                         limitTimeTooltipBySides
@@ -182,11 +182,11 @@ export default class PlayerController extends Component<
                                     total={100}
                                     current={100 * this.state.seekVolume}
                                     onChange={this.onVolumeChange}
-                                    hideHoverTime={true}
-                                    limitTimeTooltipBySides={true}
                                     onSeekStart={this.onVolumeSeekStart}
                                     onSeekEnd={this.onVolumeSeekEnd}
                                     scale={this.props.scale}
+                                    limitTimeTooltipBySides
+                                    hideHoverTime
                                 />
                             </div>
                         </div>

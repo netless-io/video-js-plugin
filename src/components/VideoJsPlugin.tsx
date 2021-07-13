@@ -80,15 +80,15 @@ class Impl extends Component<PropsWithDisplayer, State> {
                     )}
                 </div>
                 <PlayerController
-                    pause={this.pause}
-                    volume={s.volume}
-                    handleVolume={this.handleVolume}
-                    play={this.play}
-                    paused={s.paused}
                     duration={duration}
-                    seekTime={this.seekTime}
-                    bufferProgress={duration * bufferedPercent}
-                    progressTime={getCurrentTime(s, this.props) * 1000}
+                    volume={s.volume}
+                    setVolume={this.setVolume}
+                    paused={s.paused}
+                    play={this.play}
+                    pause={this.pause}
+                    currentTime={getCurrentTime(s, this.props) * 1000}
+                    setCurrentTime={this.setCurrentTime}
+                    buffered={duration * bufferedPercent}
                     scale={this.props.scale}
                     visible
                 />
@@ -127,12 +127,12 @@ class Impl extends Component<PropsWithDisplayer, State> {
         this.isEnabled() && this.props.plugin.putAttributes({ paused: true, currentTime });
     };
 
-    handleVolume = (volume: number) => {
+    setVolume = (volume: number) => {
         this.debug(">>> volume", { volume });
         this.isEnabled() && this.props.plugin.putAttributes({ volume });
     };
 
-    seekTime = (t: number) => {
+    setCurrentTime = (t: number) => {
         const hostTime = this.props.room?.calibrationTimestamp;
         this.debug(">>> seek", { currentTime: t / 1000, hostTime });
         this.isEnabled() && this.props.plugin.putAttributes({ currentTime: t / 1000, hostTime });

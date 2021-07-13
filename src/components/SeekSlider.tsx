@@ -1,13 +1,17 @@
 import React, { Component } from "react";
 import "./SeekSlider.css";
 
-export type Time = { hh: string; mm: string; ss: string };
+export interface Time {
+    hh: string;
+    mm: string;
+    ss: string;
+}
 
-export type VideoSeekSliderProps = {
+export interface VideoSeekSliderProps {
     total: number;
     current: number;
-    onChange: (time: number) => void;
-    bufferProgress?: number;
+    onChange: (value: number) => void;
+    buffered?: number;
     hideHoverTime?: boolean;
     secondsPrefix?: string;
     minutesPrefix?: string;
@@ -22,17 +26,17 @@ export type VideoSeekSliderProps = {
     onSeekStart?: () => void;
     onSeekEnd?: () => void;
     scale?: number;
-};
+}
 
-export type VideoSeekSliderStates = {
+export interface VideoSeekSliderStates {
     ready: boolean;
     trackWidth: number;
     seekHoverPosition: number;
-};
+}
 
-export type TransformType = {
+export interface TransformType {
     transform: string;
-};
+}
 
 export default class SeekSlider extends Component<VideoSeekSliderProps, VideoSeekSliderStates> {
     private seeking = false;
@@ -211,9 +215,9 @@ export default class SeekSlider extends Component<VideoSeekSliderProps, VideoSee
     }
 
     private renderBufferProgress = (): React.ReactNode => {
-        if (this.props.bufferProgress) {
+        if (this.props.buffered) {
             const style = {
-                ...this.getPositionStyle(this.props.bufferProgress),
+                ...this.getPositionStyle(this.props.buffered),
                 ...(this.props.bufferColor && { backgroundColor: this.props.bufferColor }),
             };
             return <div className="buffered" style={style} />;
