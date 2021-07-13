@@ -26,8 +26,6 @@ room.insertPlugin("video.js", {
 });
 ```
 
-Options: see [types.ts](./src/types.ts).
-
 If you are using `<script>`, here is an example:
 
 ```html
@@ -44,7 +42,74 @@ If you are using `<script>`, here is an example:
 </script>
 ```
 
+### Options
+
+<dl>
+    <dt>context</dt>
+    <dd>local config, does not affect other ones.</dd>
+    <dt>attributes</dt>
+    <dd>sync with everyone.</dd>
+</dl>
+
+```ts
+export interface PluginContext {
+    /**
+     * Chrome prevents video play sound on video.play().
+     * Set `hideMuteAlert: true` to hide the muted mask covering the player.
+     * @default false
+     */
+    hideMuteAlert?: boolean;
+
+    /**
+     * @deprecated use `enable` or `room.setWritable()` instead.
+     * @default "guest"
+     */
+    identity?: "host" | "publisher" | "guest" | "observer";
+
+    /**
+     * If set false, videojs plugins will not be controlled by the user input.
+     * @default false
+     */
+    enable?: boolean;
+
+    /**
+     * For debug.
+     * @default false
+     */
+    verbose?: boolean;
+}
+```
+
+```ts
+export interface VideoJsPluginAttributes {
+    /** whether to show [X], default `true` */
+    close?: boolean;
+    /** text at top-left corner */
+    title?: string;
+    /** mime type */
+    type?: string;
+
+    /** video url */
+    src: string;
+    /** poster */
+    poster: string;
+    /** current `room.calibrationTimestamp` */
+    hostTime: number;
+    /** current play time */
+    currentTime: number;
+    /** is paused, default `false` */
+    paused: boolean;
+    /** is muted, default `false` */
+    muted: boolean;
+    /** volume (0..1), default `1` */
+    volume: number;
+}
+
+```
+
 ### Develop
+
+Requires Node.js 16. See .env.example first.
 
 ```bash
 npm run build
