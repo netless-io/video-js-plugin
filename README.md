@@ -5,6 +5,7 @@ Requires `white-web-sdk >= 2.13.8` to work properly.
 ### Usage
 
 ```ts
+import "video.js/dist/video-js.css";
 import { videoJsPlugin } from "@netless/video-js-plugin";
 import { createPlugins } from "white-web-sdk";
 
