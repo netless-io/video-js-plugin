@@ -2,9 +2,9 @@ import { debounce } from "lodash-es";
 import React, { Component } from "react";
 import video_pause from "./icons/video_pause.svg";
 import video_play from "./icons/video_play.svg";
-import volume0 from "./icons/vulme0.svg";
-import volume1 from "./icons/vulme1.svg";
-import volume2 from "./icons/vulme2.svg";
+import volume0 from "./icons/volume0.svg";
+import volume1 from "./icons/volume1.svg";
+import volume2 from "./icons/volume2.svg";
 import "./PlayerController.css";
 import SeekSlider from "./SeekSlider";
 

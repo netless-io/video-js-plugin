@@ -1,5 +1,6 @@
 import { importFile } from "@hyrious/esbuild-dev";
 import { style } from "@hyrious/esbuild-plugin-style";
+import { svgo } from "@hyrious/esbuild-plugin-svgo";
 import cp from "child_process";
 import esbuild from "esbuild";
 import pkg from "./package.json";
@@ -24,9 +25,9 @@ const a = await esbuild.serve(
         bundle: true,
         sourcemap: true,
         metafile: true,
-        loader: { ".svg": "dataurl" },
         plugins: [
             style(),
+            svgo(),
             // https://github.com/yanm1ng/esbuild-plugin-external-global/blob/master/src/index.ts
             {
                 name: pluginNS,

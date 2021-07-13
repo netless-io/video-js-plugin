@@ -8,6 +8,4 @@ const __TOKEN__ = readEnv("TOKEN");
 const __ROOM_UUID__ = readEnv("ROOM_UUID");
 const __ROOM_TOKEN__ = readEnv("ROOM_TOKEN");
 
-export default {
-    build: { define: { __APPID__, __TOKEN__, __ROOM_UUID__, __ROOM_TOKEN__ } },
-};
+export default { build: { define: { __APPID__, __TOKEN__, __ROOM_UUID__, __ROOM_TOKEN__ } } };
