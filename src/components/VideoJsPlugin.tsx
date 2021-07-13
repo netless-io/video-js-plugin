@@ -217,12 +217,13 @@ class Impl extends Component<PropsWithDisplayer, State> {
             this.player?.autoplay("any");
             this.setState({ NoSound: true });
         } else {
-            if (err instanceof videojs.MediaError) {
+            const mediaError = this.player?.error();
+            if (mediaError) {
                 if (this.retryCount <= 3) {
                     this.initPlayer();
                     this.retryCount = this.retryCount + 1;
                 } else {
-                    this.debug("catch videojs media error", err);
+                    this.debug("catch videojs media error", mediaError);
                     this.setState({ MediaError: true });
                 }
             }
