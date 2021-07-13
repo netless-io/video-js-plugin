@@ -1,22 +1,23 @@
 {
     "name": "@netless/video-js-plugin",
-    "version": "0.3.0",
+    "version": "0.3.0-beta.11",
     "description": "a video/audio plugin for white-web-sdk using video.js.",
     "main": "dist/index.js",
-    "module": "dist/index.mjs",
-    "types": "dist/index.d.ts",
+    "module": "dist/index.es.js",
+    "types": "dist/src/index.d.ts",
     "jsdelivr": "dist/index.iife.js",
     "unpkg": "dist/index.iife.js",
+    "sideEffects": false,
     "files": [
-        "src",
         "dist"
     ],
     "author": "netless",
     "license": "MIT",
     "repository": "netless-io/video-js-plugin",
     "scripts": {
-        "build": "esbuild-dev build.ts",
-        "test": "esbuild-serve"
+        "build": "tsc -p . && esbuild-dev build.ts",
+        "build:js": "esbuild-dev build.ts",
+        "test": "esbuild-dev serve.ts"
     },
     "peerDependencies": {
         "react": ">=16",
@@ -26,12 +27,16 @@
     },
     "devDependencies": {
         "@hyrious/esbuild-dev": "^0.4.1",
-        "@hyrious/esbuild-serve": "^0.3.12",
+        "@hyrious/esbuild-plugin-style": "0.3.1",
+        "@hyrious/esbuild-plugin-svgo": "^0.1.1",
+        "@types/lodash-es": "^4.17.4",
         "@types/react": "^17.0.14",
         "@types/react-dom": "^17.0.9",
-        "@types/video.js": "^7.3.23",
+        "@types/video.js": "^7.3.24",
         "esbuild": "^0.12.15",
+        "lodash-es": "^4.17.21",
         "pretty-bytes": "^5.6.0",
+        "typescript": "^4.3.5",
         "white-web-sdk": "^2.13.10"
     }
 }

@@ -1,3 +1,5 @@
+import { style } from "@hyrious/esbuild-plugin-style";
+import { svgo } from "@hyrious/esbuild-plugin-svgo";
 import esbuild, { BuildOptions } from "esbuild";
 import prettyBytes from "pretty-bytes";
 import pkg from "./package.json";
@@ -13,8 +15,12 @@ const common: BuildOptions = {
     bundle: true,
     sourcemap: true,
     metafile: true,
+    loader: { ".svg": "default" },
+    plugins: [svgo(), style()],
+    target: "es2018",
 };
 
+// looks like global `performance` is only available since node16
 const startTime = performance.now();
 
 const cjs = esbuild.build({
@@ -40,7 +46,10 @@ const iife = esbuild.build({
     ...common,
     external: [],
     outfile: pkg.jsdelivr,
+    globalName: "WhiteWebSdkVideoJsPlugin",
     plugins: [
+        style(),
+        svgo(),
         // https://github.com/yanm1ng/esbuild-plugin-external-global/blob/master/src/index.ts
         {
             name: pluginNS,

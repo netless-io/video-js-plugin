@@ -8,26 +8,36 @@ export interface PluginContext {
     /**
      * Chrome prevents video play sound on video.play().
      * Set `hideMuteAlert: true` to hide the muted mask covering the player.
+     * @default false
      */
     hideMuteAlert?: boolean;
 
     /**
-     * @deprecated use `disabled` or `room.setWritable()` instead.
+     * @deprecated use `enable` or `room.setWritable()` instead.
+     * @default "guest"
      */
     identity?: "host" | "publisher" | "guest" | "observer";
 
     /**
-     * If set, videojs plugins will not be controlled by the user input.
+     * If set false, videojs plugins will not be controlled by the user input.
+     * @default false
      */
-    disabled?: boolean;
+    enable?: boolean;
 
     /**
      * For debug.
+     * @default false
      */
     verbose?: boolean;
 }
 
 export interface VideoJsPluginAttributes {
+    /** 是否显示 X，默认显示 */
+    close?: boolean;
+    /** 左上角标题，不填则不显示 */
+    title?: string;
+    /** 视频的 mime type，不填则根据 `src` 后缀判断 */
+    type?: string;
     /** 视频文件地址，空字符串时不播放 */
     src: string;
     /** 封面 */
