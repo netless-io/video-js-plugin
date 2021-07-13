@@ -13,7 +13,7 @@ export interface PluginContext {
     hideMuteAlert?: boolean;
 
     /**
-     * @deprecated use `disabled` or `room.setWritable()` instead.
+     * @deprecated use `enable` or `room.setWritable()` instead.
      * @default "guest"
      */
     identity?: "host" | "publisher" | "guest" | "observer";
