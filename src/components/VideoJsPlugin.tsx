@@ -72,7 +72,7 @@ class Impl extends Component<PropsWithDisplayer, State> {
             >
                 <div className="video-js-plugin-player" ref={this.container}></div>
                 <div className="video-js-plugin-header">
-                    {/* <div className="video-js-plugin-title">Sync Player</div> */}
+                    {s.title && <div className="video-js-plugin-title">{s.title}</div>}
                     {(s.close ?? true) && (
                         <div className="videojs-plugin-close-icon" ref={this.setupClose}>
                             &times;
@@ -149,6 +149,7 @@ class Impl extends Component<PropsWithDisplayer, State> {
         this.disposer = autorun(this.syncPlayerWithAttributes);
         this.syncPlayerTimer = setInterval(this.syncPlayerWithAttributes, options.syncInterval);
         this.decreaseRetryTimer = setInterval(this.decreaseRetryCount, options.retryInterval);
+        (window as any).plugin = this.props.plugin;
     }
 
     componentWillUnmount() {
@@ -246,7 +247,7 @@ class Impl extends Component<PropsWithDisplayer, State> {
         this.player = undefined;
 
         this.debug("creating elements ...");
-        const { src, poster } = this.props.plugin.attributes;
+        const { type, src, poster } = this.props.plugin.attributes;
 
         const wrapper = document.createElement("div");
         wrapper.setAttribute("data-vjs-player", "");
@@ -265,6 +266,7 @@ class Impl extends Component<PropsWithDisplayer, State> {
             video.src = src;
         }
         source.src = src;
+        type && (source.type = type);
 
         video.appendChild(source);
         wrapper.appendChild(video);

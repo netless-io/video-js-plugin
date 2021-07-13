@@ -32,11 +32,12 @@ export interface PluginContext {
 }
 
 export interface VideoJsPluginAttributes {
-    /**
-     * 是否显示 X，默认显示
-     * @default true
-     */
+    /** 是否显示 X，默认显示 */
     close?: boolean;
+    /** 左上角标题，不填则不显示 */
+    title?: string;
+    /** 视频的 mime type，不填则根据 `src` 后缀判断 */
+    type?: string;
     /** 视频文件地址，空字符串时不播放 */
     src: string;
     /** 封面 */
