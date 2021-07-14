@@ -130,6 +130,7 @@ class Impl extends Component<PropsWithDisplayer, State> {
     setVolume = (volume: number) => {
         this.debug(">>> volume", { volume });
         this.isEnabled() && this.props.plugin.putAttributes({ volume });
+        this.isEnabled() && this.props.plugin.putAttributes({ volume, muted: volume === 0 });
     };
 
     setCurrentTime = (t: number) => {
