@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import videojs, { VideoJsPlayer } from "video.js";
 import { autorun, CNode, Player, PlayerConsumer, Room, RoomConsumer } from "white-web-sdk";
 import { options } from "../options";
-import { Props } from "../types";
+import { Props, VideoJsPluginAttributes } from "../types";
 import { checkWhiteWebSdkVersion, getCurrentTime, nextFrame } from "../utils";
 import PlayerController from "./PlayerController";
 import "./style.css";
@@ -58,8 +58,28 @@ class Impl extends Component<PropsWithDisplayer, State> {
         props.room && checkWhiteWebSdkVersion(props.room);
     }
 
+    /**
+     * TODO: remove this method until white-web-sdk fixed this bug.
+     */
+    getAttributes() {
+        let s: VideoJsPluginAttributes;
+        if (this.props.player) {
+            s = this.props.plugin.attributes;
+        } else {
+            try {
+                s = this.props.room!.getPluginAttributes(this.props.plugin.identifier);
+            } catch {
+                s = this.props.plugin.attributes;
+            }
+        }
+        return s;
+    }
+
     render() {
-        const s = this.props.plugin.attributes;
+        if (!(this.props.room || this.props.player)) {
+            return null;
+        }
+        const s = this.getAttributes();
         const duration = (this.player?.duration() || 1e3) * 1000;
         const bufferedPercent = this.player?.bufferedPercent() || 0;
 
@@ -122,7 +142,7 @@ class Impl extends Component<PropsWithDisplayer, State> {
     };
 
     pause = () => {
-        const currentTime = getCurrentTime(this.props.plugin.attributes, this.props);
+        const currentTime = getCurrentTime(this.getAttributes(), this.props);
         this.debug(">>> pause", { paused: true, currentTime });
         this.isEnabled() && this.props.plugin.putAttributes({ paused: true, currentTime });
     };
@@ -161,7 +181,7 @@ class Impl extends Component<PropsWithDisplayer, State> {
 
     syncPlayerWithAttributes = () => {
         void this.props.plugin.context;
-        const s = this.props.plugin.attributes;
+        const s = this.getAttributes();
 
         const player = this.player;
         if (!player) return;
@@ -235,7 +255,7 @@ class Impl extends Component<PropsWithDisplayer, State> {
     fixPlayFail = () => {
         this.debug("try to fix play state");
         this.setState({ NoSound: false });
-        const { muted, volume } = this.props.plugin.attributes;
+        const { muted, volume } = this.getAttributes();
         if (this.player) {
             this.player.muted(muted);
             this.player.volume(volume);
@@ -247,7 +267,7 @@ class Impl extends Component<PropsWithDisplayer, State> {
         this.player = undefined;
 
         this.debug("creating elements ...");
-        const { type, src, poster } = this.props.plugin.attributes;
+        const { type, src, poster } = this.getAttributes();
 
         const wrapper = document.createElement("div");
         wrapper.setAttribute("data-vjs-player", "");
