@@ -59,7 +59,7 @@ class Impl extends Component<PropsWithDisplayer, State> {
     }
 
     /**
-     * TODO: remove this method until white-web-sdk fixed this bug.
+     * FIXME: remove this method when white-web-sdk fixed this bug.
      */
     getAttributes() {
         let s: VideoJsPluginAttributes;
