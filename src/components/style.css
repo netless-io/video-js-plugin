@@ -21,11 +21,15 @@
 .vjs-p .video-js-plugin-header {
     position: absolute;
     z-index: 100;
-    top: 0;
+    top: -0.5px;
     height: 30px;
     width: 100%;
     display: flex;
-    background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.45) 40%, rgba(0, 0, 0, 0));
+    background: linear-gradient(
+        rgba(0, 0, 0, 0.85),
+        rgba(0, 0, 0, 0.45) 40%,
+        rgba(0, 0, 0, 0)
+    );
     transition: opacity 200ms;
     user-select: none;
 }
