@@ -28,6 +28,11 @@ export interface VideoJsPluginOptions {
      * 可以自定义播放器的接口，每次创建出一个播放器都会调一下这个函数
      */
     onPlayer?: (player: VideoJsPlayer) => void;
+
+    /**
+     * 自定义 log 函数，不填默认使用 console.log
+     */
+    log?: Console["log"];
 }
 
 export const defaultOptions: VideoJsPluginOptions = {
@@ -38,6 +43,6 @@ export const defaultOptions: VideoJsPluginOptions = {
 
 export let options = defaultOptions;
 
-export function setOptions(userDefined: VideoJsPluginOptions) {
+export function setOptions(userDefined: Partial<VideoJsPluginOptions>) {
     options = { ...defaultOptions, ...userDefined };
 }

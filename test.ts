@@ -28,7 +28,11 @@ function post(path: string, body: object) {
 const { createPlugins } = WhiteWebSdk;
 const { PluginId, Version, videoJsPlugin } = WhiteWebSdkVideoJsPlugin;
 
-const plugins = createPlugins({ [PluginId]: videoJsPlugin() });
+const plugins = createPlugins({
+    [PluginId]: videoJsPlugin({
+        log: console.debug.bind(console),
+    }),
+});
 plugins.setPluginContext(PluginId, { enable: true, verbose: true });
 
 log("plugins =", plugins);

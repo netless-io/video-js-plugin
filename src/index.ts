@@ -7,7 +7,7 @@ export * from "./constants";
 export { VideoJsPluginOptions } from "./options";
 export { PluginContext, VideoJsPluginAttributes } from "./types";
 
-export const videoJsPlugin = (options?: VideoJsPluginOptions): Plugin => {
+export const videoJsPlugin = (options?: Partial<VideoJsPluginOptions>): Plugin => {
     options && setOptions(options);
 
     return {

@@ -1,6 +1,15 @@
 import React, { Component } from "react";
 import videojs, { VideoJsPlayer } from "video.js";
-import { autorun, CNode, Player, PlayerConsumer, Room, RoomConsumer } from "white-web-sdk";
+import {
+    autorun,
+    CNode,
+    Player,
+    PlayerConsumer,
+    Room,
+    RoomConsumer,
+    WhiteVersion,
+} from "white-web-sdk";
+import { Version } from "../constants";
 import { options } from "../options";
 import { Props, VideoJsPluginAttributes } from "../types";
 import { checkWhiteWebSdkVersion, getCurrentTime, nextFrame } from "../utils";
@@ -126,7 +135,7 @@ class Impl extends Component<PropsWithDisplayer, State> {
 
     debug(msg: string, ...args: any[]) {
         if (this.props.plugin.context?.verbose) {
-            console.log(`[VideoJS Plugin] ${msg}`, ...args);
+            (options.log || console.log)(`[VideoJS Plugin] ${msg}`, ...args);
         }
     }
 
@@ -166,6 +175,9 @@ class Impl extends Component<PropsWithDisplayer, State> {
     };
 
     componentDidMount() {
+        this.debug("plugin version =", Version);
+        this.debug("sdk version =", WhiteVersion);
+        this.debug("video.js version =", videojs.VERSION);
         this.initPlayer();
         this.disposer = autorun(this.syncPlayerWithAttributes);
         this.syncPlayerTimer = setInterval(this.syncPlayerWithAttributes, options.syncInterval);
