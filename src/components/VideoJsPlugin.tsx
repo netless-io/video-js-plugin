@@ -5,6 +5,7 @@ import {
     CNode,
     Player,
     PlayerConsumer,
+    PlayerPhase,
     Room,
     RoomConsumer,
     WhiteVersion,
@@ -80,6 +81,11 @@ class Impl extends Component<PropsWithDisplayer, State> {
             } catch {
                 s = this.props.plugin.attributes;
             }
+        }
+        // if we are in replay mode and is pausing, pause the player
+        const pausing = [PlayerPhase.Pause, PlayerPhase.Ended, PlayerPhase.Stopped];
+        if (!s.paused && pausing.includes(this.props.player?.phase!)) {
+            s = { ...s, paused: true };
         }
         return s;
     }
