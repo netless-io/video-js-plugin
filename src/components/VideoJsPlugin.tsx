@@ -85,7 +85,8 @@ class Impl extends Component<PropsWithDisplayer, State> {
         // if we are in replay mode and is pausing, pause the player
         const pausing = [PlayerPhase.Pause, PlayerPhase.Ended, PlayerPhase.Stopped];
         if (!s.paused && pausing.includes(this.props.player?.phase!)) {
-            s = { ...s, paused: true };
+            const currentTime = getCurrentTime(s, this.props);
+            s = { ...s, currentTime, paused: true };
         }
         return s;
     }

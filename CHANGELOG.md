@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3.5
+## 0.3.6
 
 - Fix: border style on android by shifting 0.5px. Thanks to [@l1shen].
 - Add: custom logger option in `videoJsPlugin({ log: ... })`.
