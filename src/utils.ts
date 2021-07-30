@@ -34,3 +34,5 @@ export function getTimestamp(props: PropsWithDisplayer) {
         return props.room.calibrationTimestamp;
     }
 }
+
+export const isSafari = navigator.userAgent.includes("Safari");

@@ -13,7 +13,7 @@ import {
 import { Version } from "../constants";
 import { options } from "../options";
 import { Props, VideoJsPluginAttributes } from "../types";
-import { checkWhiteWebSdkVersion, getCurrentTime, nextFrame } from "../utils";
+import { checkWhiteWebSdkVersion, getCurrentTime, isSafari, nextFrame } from "../utils";
 import PlayerController from "./PlayerController";
 import "./style.css";
 import { FlexTransform } from "./Transform";
@@ -253,7 +253,8 @@ class Impl extends Component<PropsWithDisplayer, State> {
     };
 
     catchPlayFail = (err: Error) => {
-        if (String(err).includes("interact")) {
+        const string = String(err);
+        if ((isSafari && string.includes("NotAllowedError")) || string.includes("interact")) {
             this.player?.autoplay("any");
             this.setState({ NoSound: true });
         } else {
