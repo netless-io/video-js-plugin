@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.7
+
+- Fix: correct the detection of not allowing video play in Safari.
+
 ## 0.3.6
 
 - Fix: border style on android by shifting 0.5px. Thanks to [@l1shen].

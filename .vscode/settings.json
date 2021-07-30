@@ -9,5 +9,8 @@
     "prettier.arrowParens": "avoid",
     "[html]": {
         "editor.defaultFormatter": "vscode.html-language-features"
+    },
+    "[markdown]": {
+        "editor.defaultFormatter": null
     }
 }
