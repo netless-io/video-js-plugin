@@ -26,17 +26,17 @@
         "white-web-sdk": "^2.13.8"
     },
     "devDependencies": {
-        "@hyrious/esbuild-dev": "^0.4.5",
+        "@hyrious/esbuild-dev": "^0.4.6",
         "@hyrious/esbuild-plugin-style": "0.3.3",
         "@hyrious/esbuild-plugin-svgo": "^0.1.1",
         "@types/lodash-es": "^4.17.4",
         "@types/react": "^17.0.19",
         "@types/react-dom": "^17.0.9",
         "@types/video.js": "^7.3.26",
-        "esbuild": "^0.12.21",
+        "esbuild": "^0.12.22",
         "lodash-es": "^4.17.21",
         "pretty-bytes": "^5.6.0",
         "typescript": "^4.3.5",
-        "white-web-sdk": "^2.13.12"
+        "white-web-sdk": "^2.13.18"
     }
 }
