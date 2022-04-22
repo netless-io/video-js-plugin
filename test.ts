@@ -59,24 +59,25 @@ if (uuid && roomToken) {
 }
 
 function joinRoom(uuid: string, roomToken: string) {
-    sdk.joinRoom({ uuid, roomToken }).then(room_ => {
+    sdk.joinRoom({ uid: Math.random().toString(36).slice(2), uuid, roomToken }).then(room_ => {
         room_.bindHtmlElement(document.querySelector("#app"));
         (window as any).room = room_;
         stat("loaded.");
-        ((window as any).room as Room).setMemberState({
+        room_.setMemberState({
             currentApplianceName: "selector" as ApplianceNames,
         });
         ($("#btn") as HTMLButtonElement).onclick = function insertPlugin() {
-            ((window as any).room as Room).insertPlugin("video.js", {
+            room_.insertPlugin(PluginId, {
                 originX: -240,
                 originY: -43,
                 width: 480,
                 height: 86,
                 attributes: {
-                    src: "https://beings.oss-cn-hangzhou.aliyuncs.com/test/aaa59a55-81ff-45e8-8185-fd72c695def4/1606277539701637%E7%9A%84%E5%89%AF%E6%9C%AC.mp4",
+                    src: "https://flat-storage.oss-accelerate.aliyuncs.com/cloud-storage/2022-03/28/e35a6676-aa5d-4a61-8f17-87e626b7d1b7/e35a6676-aa5d-4a61-8f17-87e626b7d1b7.mp4",
+                    hostTime: room_.calibrationTimestamp,
                 },
             });
-            ((window as any).room as Room).setMemberState({
+            room_.setMemberState({
                 currentApplianceName: "selector" as ApplianceNames,
             });
         };
